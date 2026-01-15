@@ -26,7 +26,10 @@ export default function Dashboard({ data, onLogout }) {
                     <div className="flex h-16 items-center justify-between">
                         <div className="flex items-center gap-4">
                             <div className="flex flex-col">
-                                <img src="/logo.svg" alt="NICHE Logo" className="h-8 object-contain mb-1" />
+                                <div className="flex items-center gap-2">
+                                    <img src="/logo.svg" alt="Equilibrium Logo" className="h-6 object-contain" />
+                                    <span className="text-xl font-bold tracking-tight">NICHE</span>
+                                </div>
                                 <span className="text-[10px] uppercase tracking-wider text-muted-foreground pl-1">
                                     Issued & Managed by Equilibrium
                                 </span>
