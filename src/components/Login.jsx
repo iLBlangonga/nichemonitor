@@ -12,12 +12,7 @@ export default function Login({ onLogin }) {
         // Hardcoded simple password check
         if (password === 'equilibrium' || password === 'admin') {
             setShowAnimation(true);
-
-            // Set a timeout to allow the video to play before actually logging in
-            // Assuming video length is roughly 3-4 seconds, but we can set a fixed viewing time.
-            setTimeout(() => {
-                onLogin(password === 'admin');
-            }, 3500); // 3.5s delay
+            // We rely on the video onEnded event.
         } else {
             setError(true);
         }
@@ -30,8 +25,9 @@ export default function Login({ onLogin }) {
                     autoPlay
                     muted
                     playsInline
+                    preload="auto"
                     className="w-full h-full object-cover md:object-contain max-w-4xl"
-                    onEnded={() => onLogin(password === 'admin')} // Fallback if video ends before timeout or user interaction
+                    onEnded={() => onLogin(password === 'admin')}
                 >
                     <source src="/logo_animation.mp4" type="video/mp4" />
                     Your browser does not support the video tag.
@@ -44,9 +40,9 @@ export default function Login({ onLogin }) {
         <div className="min-h-screen flex items-center justify-center bg-background text-foreground p-4">
             <div className="w-full max-w-md space-y-8">
                 <div className="text-center">
-                    <div className="mx-auto h-20 w-20 flex items-center justify-center mb-6">
-                        {/* Static Logo on Login Screen */}
-                        <img src="/logo.svg" alt="Equilibrium Logo" className="h-full w-full object-contain" />
+                    <div className="mx-auto h-32 w-full flex items-center justify-center mb-6">
+                        {/* Static Logo on Login Screen - Enlarged */}
+                        <img src="/logo.svg" alt="Equilibrium Logo" className="h-full object-contain" />
                     </div>
                     <h2 className="text-3xl font-bold tracking-tight text-foreground">
                         Investor Portal
