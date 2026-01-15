@@ -44,9 +44,14 @@ export default function Login({ onLogin }) {
     const letterVariants = {
         initial: { opacity: 1, x: 0, y: 0, rotate: 0, scale: 1, filter: "blur(0px)" },
         exit: () => {
-            // Generate random scatter values
-            const randomX = (Math.random() - 0.5) * 800; // Wider spread
-            const randomY = (Math.random() - 0.5) * 800; // Taller spread
+            // Generate random scatter values with minimum distance to ensure "explosion" feeling on mobile
+            // On mobile, +/- 400px is enough to clear screen, but we ensure it's not near zero.
+
+            const minX = 200; // Minimum horizontal flight
+            const minY = 200; // Minimum vertical flight
+
+            const randomX = (Math.random() > 0.5 ? 1 : -1) * (minX + Math.random() * 600);
+            const randomY = (Math.random() > 0.5 ? 1 : -1) * (minY + Math.random() * 600);
             const randomRotate = (Math.random() - 0.5) * 360; // Full spin potential
             const randomScale = 0.5 + Math.random(); // Varied scale
 
@@ -58,8 +63,8 @@ export default function Login({ onLogin }) {
                 scale: randomScale,
                 filter: "blur(4px)",
                 transition: {
-                    duration: 4.0, // MUCH SLOWRR: "Molto più lentamente"
-                    ease: [0.2, 0.8, 0.2, 1] // Very smooth, almost distinct "floating" feel
+                    duration: 4.0, // Slow and dreamy
+                    ease: [0.2, 0.8, 0.2, 1]
                 }
             };
         }
@@ -78,8 +83,8 @@ export default function Login({ onLogin }) {
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-background text-foreground p-4 overflow-hidden relative">
-            {/* Main Container - Fixed dimensions or min-height to prevent layout jump */}
-            <div className="w-full max-w-md relative z-10 flex flex-col items-center h-[600px] justify-center">
+            {/* Main Container - Responsive layout handling */}
+            <div className="w-full max-w-md relative z-10 flex flex-col items-center justify-center min-h-[500px]">
 
                 {/* Logo / Video Section */}
                 <div className="relative w-full flex items-center justify-center mb-6 h-32 shrink-0">
@@ -128,13 +133,13 @@ export default function Login({ onLogin }) {
                 </div>
 
                 {/* Text & Form Container - Absolute position overlay to allow particles to fly freely without pushing layout */}
-                <div className="relative w-full flex flex-col items-center z-30"> {/* Text is Z-30 (highest) */}
+                <div className="relative w-full flex flex-col items-center z-30">
                     <AnimatePresence mode="popLayout">
                         {!showAnimation && (
                             <motion.div
                                 className="flex flex-col items-center text-center w-full"
                                 initial={{ opacity: 1 }}
-                                exit={{ opacity: 0, transition: { duration: 3.5 } }} // Parent fades slightly slower than children to ensure visibility
+                                exit={{ opacity: 0, transition: { duration: 3.5 } }}
                             >
                                 <h1 className="text-4xl font-extrabold tracking-tight text-foreground mb-1 perspective-1000">
                                     <SplitText
