@@ -5,24 +5,48 @@ import { cn } from '../lib/utils';
 export default function Login({ onLogin }) {
     const [password, setPassword] = useState('');
     const [error, setError] = useState(false);
+    const [showAnimation, setShowAnimation] = useState(false);
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Hardcoded simple password for demo purposes (as requested: "private password access (scalable)")
-        // Ideally this comes from env or a more secure check, but for a static client-side wall:
+        // Hardcoded simple password check
         if (password === 'equilibrium' || password === 'admin') {
-            onLogin(password === 'admin');
+            setShowAnimation(true);
+
+            // Set a timeout to allow the video to play before actually logging in
+            // Assuming video length is roughly 3-4 seconds, but we can set a fixed viewing time.
+            setTimeout(() => {
+                onLogin(password === 'admin');
+            }, 3500); // 3.5s delay
         } else {
             setError(true);
         }
     };
 
+    if (showAnimation) {
+        return (
+            <div className="fixed inset-0 z-50 bg-black flex items-center justify-center">
+                <video
+                    autoPlay
+                    muted
+                    playsInline
+                    className="w-full h-full object-cover md:object-contain max-w-4xl"
+                    onEnded={() => onLogin(password === 'admin')} // Fallback if video ends before timeout or user interaction
+                >
+                    <source src="/logo_animation.mp4" type="video/mp4" />
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        );
+    }
+
     return (
         <div className="min-h-screen flex items-center justify-center bg-background text-foreground p-4">
             <div className="w-full max-w-md space-y-8">
                 <div className="text-center">
-                    <div className="mx-auto h-12 w-12 bg-accent rounded-full flex items-center justify-center mb-4">
-                        <Lock className="h-6 w-6 text-accent-foreground" />
+                    <div className="mx-auto h-20 w-20 flex items-center justify-center mb-6">
+                        {/* Static Logo on Login Screen */}
+                        <img src="/logo.svg" alt="Equilibrium Logo" className="h-full w-full object-contain" />
                     </div>
                     <h2 className="text-3xl font-bold tracking-tight text-foreground">
                         Investor Portal
