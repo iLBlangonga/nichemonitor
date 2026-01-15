@@ -20,18 +20,20 @@ export default function Login({ onLogin }) {
 
     if (showAnimation) {
         return (
-            <div className="fixed inset-0 z-50 bg-black flex items-center justify-center">
-                <video
-                    autoPlay
-                    muted
-                    playsInline
-                    preload="auto"
-                    className="w-full h-full object-cover md:object-contain max-w-4xl"
-                    onEnded={() => onLogin(password === 'admin')}
-                >
-                    <source src="/logo_animation.mp4" type="video/mp4" />
-                    Your browser does not support the video tag.
-                </video>
+            <div className="fixed inset-0 z-50 bg-black flex items-center justify-center p-4">
+                <div className="relative w-full max-w-[600px] aspect-video bg-black rounded-lg overflow-hidden shadow-2xl">
+                    <video
+                        autoPlay
+                        muted
+                        playsInline
+                        preload="auto"
+                        className="w-full h-full object-contain"
+                        onEnded={() => onLogin(password === 'admin')}
+                    >
+                        <source src="/logo_animation.mp4" type="video/mp4" />
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
             </div>
         );
     }
@@ -44,10 +46,13 @@ export default function Login({ onLogin }) {
                         {/* Static Logo on Login Screen - Enlarged */}
                         <img src="/logo.svg" alt="Equilibrium Logo" className="h-full object-contain" />
                     </div>
-                    <h2 className="text-3xl font-bold tracking-tight text-foreground">
+                    <h1 className="text-4xl font-extrabold tracking-tight text-foreground mb-1">
+                        NICHE
+                    </h1>
+                    <h2 className="text-lg font-medium text-muted-foreground uppercase tracking-wider">
                         Investor Portal
                     </h2>
-                    <p className="mt-2 text-sm text-muted-foreground">
+                    <p className="mt-4 text-sm text-muted-foreground">
                         Please enter your access key to view the dashboard.
                     </p>
                 </div>
