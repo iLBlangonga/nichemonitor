@@ -38,10 +38,6 @@ export default function Dashboard({ data, onLogout }) {
                                 <span className="font-medium text-foreground">{formatDate(data.lastUpdate)}</span>
                             </div>
                             <div className="h-6 w-px bg-border hidden md:block" />
-                            <button className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2">
-                                <FileText size={16} />
-                                <span className="hidden sm:inline">Factsheet</span>
-                            </button>
                             <button
                                 onClick={onLogout}
                                 className="text-sm font-medium text-muted-foreground hover:text-destructive transition-colors flex items-center gap-2"

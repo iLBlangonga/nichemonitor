@@ -26,7 +26,10 @@ export default function Performance({ data }) {
                 cutoffDate.setMonth(lastDate.getMonth() - 6);
                 break;
             case 'YTD':
-                cutoffDate.setMonth(0, 1); // Jan 1st of current year (of the last data point)
+                cutoffDate.setFullYear(lastDate.getFullYear(), 0, 1); // Exact Jan 1st of current year
+                // If the dataset doesn't have a point on Jan 1st, filtering >= Jan 1st is correct.
+                // However, without a point on Jan 1st, the chart starts at the first available data point in the year.
+                // This is mathematically correct for "YTD performance from data", but visually it might look short.
                 break;
             case '1Y':
                 cutoffDate.setFullYear(lastDate.getFullYear() - 1);
@@ -41,8 +44,10 @@ export default function Performance({ data }) {
     const chartData = getFilteredData();
 
     // Calculate min/max for Y-axis domain to focus the chart
-    const minValue = Math.min(...chartData.map(d => d.value));
-    const maxValue = Math.max(...chartData.map(d => d.value));
+    // Safety check for empty data
+    const hasData = chartData.length > 0;
+    const minValue = hasData ? Math.min(...chartData.map(d => d.value)) : 0;
+    const maxValue = hasData ? Math.max(...chartData.map(d => d.value)) : 100;
     const padding = (maxValue - minValue) * 0.1;
 
     return (
@@ -124,7 +129,7 @@ export default function Performance({ data }) {
             </div>
 
             <div className="text-xs text-muted-foreground text-right border-t border-border/50 pt-2 opacity-70">
-                * Performance assumes reinvestment of dividends. Data is net of fees.
+                * The NAV calculation is performed by Equilibrium and is subject to slight variations until the official release.
             </div>
         </section>
     );
