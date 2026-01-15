@@ -1,5 +1,4 @@
-import React from 'react';
-import { Calendar, Megaphone, Target, ArrowRight } from 'lucide-react';
+import { Calendar, Megaphone, Target, ArrowRight, Activity } from 'lucide-react';
 
 function UpdateCard({ title, icon, content }) {
     return (
