@@ -197,7 +197,7 @@
   },
   "timeline": [
     {
-      "date": "2024-01-01",
+      "date": "2025-07-01",
       "event": "Fund Inception"
     },
     {
@@ -211,24 +211,24 @@
   ],
   "documents": [
     {
-      "name": "Factsheet Jan 2026",
-      "type": "pdf",
-      "url": "#"
-    },
-    {
-      "name": "Termsheet (Retail)",
+      "name": "Termsheet",
       "type": "pdf",
       "url": "/niche_termsheet_retail.pdf"
     },
     {
-      "name": "Prospectus",
+      "name": "Latest Newsletter",
+      "type": "pdf",
+      "url": "#"
+    },
+    {
+      "name": "What is Niche",
       "type": "pdf",
       "url": "#"
     }
   ],
   "transparency": {
     "nav": "Weekly",
-    "allocation": "Monthly (Lagged)",
+    "allocation": "Dependent on signals and market conditions",
     "risk": "Weekly"
   }
 }
