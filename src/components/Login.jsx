@@ -41,36 +41,56 @@ export default function Login({ onLogin }) {
 
                 {/* Logo / Video Section */}
                 <div className="relative w-full flex items-center justify-center mb-2 h-32 shrink-0">
-                    <AnimatePresence mode="wait">
-                        {showAnimation ? (
+                    <AnimatePresence>
+                        {showAnimation && (
                             <motion.div
                                 key="video-player"
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                transition={{ duration: 1.5, ease: "easeOut" }} // Slower fade in for video too
-                                className="relative w-full max-w-[220px] aspect-video"
-                            >
-                                <video
-                                    autoPlay
-                                    muted
-                                    playsInline
-                                    preload="auto"
-                                    className="w-full h-full object-contain"
-                                    onEnded={() => onLogin(password === 'admin')}
-                                >
-                                    <source src="/logo_animation.mp4" type="video/mp4" />
-                                </video>
-                            </motion.div>
-                        ) : (
-                            <motion.div
-                                key="static-logo"
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
-                                exit={{ opacity: 0, scale: 0.9, transition: { duration: 1.0 } }}
-                                className="h-full w-full flex items-center justify-center"
+                                transition={{ duration: 1.0, ease: "easeOut" }} // Crossfade in
+                                className="absolute inset-0 flex items-center justify-center z-20"
                             >
-                                <img src="/logo.svg" alt="Equilibrium Logo" className="h-full object-contain" />
+                                <div className="relative w-full max-w-[220px] aspect-video">
+                                    <video
+                                        autoPlay
+                                        muted
+                                        playsInline
+                                        preload="auto"
+                                        className="w-full h-full object-contain"
+                                        onEnded={() => onLogin(password === 'admin')}
+                                    >
+                                        <source src="/logo_animation.mp4" type="video/mp4" />
+                                    </video>
+                                </div>
                             </motion.div>
+                        )}
+                    </AnimatePresence>
+
+                    <AnimatePresence>
+                        {(!showAnimation || true) && (
+                            // Keep static logo visible behind video to prevent gap, 
+                            // or fade it out slowly once video is fully playing.
+                            // Actually, let's fade it out ONLY when animation starts, but SLOWLY so they overlap.
+                            !showAnimation ? (
+                                <motion.div
+                                    key="static-logo-visible"
+                                    initial={{ opacity: 1 }}
+                                    exit={{ opacity: 0, transition: { duration: 1.0 } }} // Fade out matches video fade in
+                                    className="absolute inset-0 flex items-center justify-center z-10"
+                                >
+                                    <img src="/logo.svg" alt="Equilibrium Logo" className="h-full object-contain" />
+                                </motion.div>
+                            ) : (
+                                <motion.div
+                                    key="static-logo-fading"
+                                    initial={{ opacity: 1 }}
+                                    animate={{ opacity: 0 }}
+                                    transition={{ duration: 1.5, delay: 0.2 }} // Wait slightly then fade out
+                                    className="absolute inset-0 flex items-center justify-center z-10"
+                                >
+                                    <img src="/logo.svg" alt="Equilibrium Logo" className="h-full object-contain" />
+                                </motion.div>
+                            )
                         )}
                     </AnimatePresence>
                 </div>
