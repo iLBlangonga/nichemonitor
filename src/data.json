@@ -1,0 +1,167 @@
+{
+    "lastUpdate": "2026-01-14T17:00:00Z",
+    "nav": {
+        "current": 124.50,
+        "mtd": 1.25,
+        "ytd": 5.40,
+        "inception": 24.50
+    },
+    "metrics": {
+        "volatility": 8.5,
+        "maxDrawdown": -6.2,
+        "rollingDrawdown": -2.1,
+        "liquidity": 95
+    },
+    "performance": [
+        {
+            "date": "2025-01-01",
+            "value": 100
+        },
+        {
+            "date": "2025-02-01",
+            "value": 102
+        },
+        {
+            "date": "2025-03-01",
+            "value": 101.5
+        },
+        {
+            "date": "2025-04-01",
+            "value": 104
+        },
+        {
+            "date": "2025-05-01",
+            "value": 106
+        },
+        {
+            "date": "2025-06-01",
+            "value": 105.5
+        },
+        {
+            "date": "2025-07-01",
+            "value": 108
+        },
+        {
+            "date": "2025-08-01",
+            "value": 110
+        },
+        {
+            "date": "2025-09-01",
+            "value": 112
+        },
+        {
+            "date": "2025-10-01",
+            "value": 111
+        },
+        {
+            "date": "2025-11-01",
+            "value": 115
+        },
+        {
+            "date": "2025-12-01",
+            "value": 118
+        },
+        {
+            "date": "2026-01-01",
+            "value": 124.5
+        }
+    ],
+    "allocation": {
+        "strategies": [
+            {
+                "name": "Equity Quant",
+                "value": 35,
+                "range": "30-40%"
+            },
+            {
+                "name": "Macro / Rates",
+                "value": 25,
+                "range": "20-30%"
+            },
+            {
+                "name": "Crypto",
+                "value": 10,
+                "range": "5-15%"
+            },
+            {
+                "name": "Tactical Overlay",
+                "value": 15,
+                "range": "10-20%"
+            },
+            {
+                "name": "Cash & Hedges",
+                "value": 15,
+                "range": "10-20%"
+            }
+        ],
+        "geo": [
+            {
+                "name": "North America",
+                "value": 45
+            },
+            {
+                "name": "Europe",
+                "value": 30
+            },
+            {
+                "name": "Asia",
+                "value": 15
+            },
+            {
+                "name": "Global",
+                "value": 10
+            }
+        ],
+        "exposure": {
+            "net": 65,
+            "gross": 140,
+            "bias": "Long Volatility",
+            "liquidity": "T+1"
+        }
+    },
+    "riskGovernance": {
+        "monitoring": "Continuous proprietary quantitative models",
+        "limits": "Systematic enforcement of position sizing and stress scenarios"
+    },
+    "updates": {
+        "marketContext": "Global markets have shown resilience despite rising rate expectations. Volatility remains compressed.",
+        "portfolioActions": "Reduced gross exposure in Equity Quant. Increased hedges in anticipation of macro events.",
+        "focus": "Monitoring inflation data prints and central bank liquidity flows."
+    },
+    "timeline": [
+        {
+            "date": "2024-01-01",
+            "event": "Fund Inception"
+        },
+        {
+            "date": "2025-06-15",
+            "event": "Rebalancing Window"
+        },
+        {
+            "date": "2026-01-10",
+            "event": "Q4 Factsheet Release"
+        }
+    ],
+    "documents": [
+        {
+            "name": "Factsheet Jan 2026",
+            "type": "pdf",
+            "url": "#"
+        },
+        {
+            "name": "KID 2026",
+            "type": "pdf",
+            "url": "#"
+        },
+        {
+            "name": "Prospectus",
+            "type": "pdf",
+            "url": "#"
+        }
+    ],
+    "transparency": {
+        "nav": "Weekly",
+        "allocation": "Monthly (Lagged)",
+        "risk": "Weekly"
+    }
+}

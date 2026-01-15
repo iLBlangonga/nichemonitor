@@ -1,0 +1,197 @@
+import React, { useState } from 'react';
+import { LogOut, Save, RotateCcw, FileJson, LayoutDashboard, Edit3 } from 'lucide-react';
+import { cn } from '../lib/utils';
+
+const TABS = [
+    { id: 'general', label: 'General & NAV', icon: <LayoutDashboard size={16} /> },
+    { id: 'updates', label: 'Updates & Context', icon: <Edit3 size={16} /> },
+    { id: 'raw', label: 'Advanced (JSON)', icon: <FileJson size={16} /> },
+];
+
+export default function Admin({ data, setData, onLogout }) {
+    const [activeTab, setActiveTab] = useState('general');
+    const [jsonError, setJsonError] = useState(null);
+    const [tempJson, setTempJson] = useState(JSON.stringify(data, null, 2));
+
+    // Handler for form field updates
+    const updateField = (path, value) => {
+        const newData = { ...data };
+        const keys = path.split('.');
+        let current = newData;
+        for (let i = 0; i < keys.length - 1; i++) {
+            current = current[keys[i]];
+        }
+        current[keys[keys.length - 1]] = value;
+        setData(newData);
+        setTempJson(JSON.stringify(newData, null, 2));
+    };
+
+    const handleJsonChange = (e) => {
+        const newVal = e.target.value;
+        setTempJson(newVal);
+        try {
+            const parsed = JSON.parse(newVal);
+            setData(parsed);
+            setJsonError(null);
+        } catch (err) {
+            setJsonError(err.message);
+        }
+    };
+
+    const handleSave = () => {
+        const jsonString = JSON.stringify(data, null, 2);
+        const blob = new Blob([jsonString], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = "data.json";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
+    return (
+        <div className="min-h-screen bg-background text-foreground font-sans">
+            <header className="border-b border-border bg-card">
+                <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <span className="font-bold text-lg">NICHE Admin</span>
+                        <span className="text-xs text-muted-foreground px-2 py-0.5 bg-muted rounded-full">v1.0</span>
+                    </div>
+                    <div className="flex items-center gap-4">
+                        <button onClick={handleSave} className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-md font-medium text-sm hover:bg-primary/90 transition-colors">
+                            <Save size={16} />
+                            Download Config
+                        </button>
+                        <button onClick={onLogout} className="flex items-center gap-2 text-muted-foreground hover:text-destructive transition-colors">
+                            <LogOut size={16} />
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <main className="max-w-6xl mx-auto px-4 py-8">
+                <div className="flex flex-col md:flex-row gap-8">
+                    {/* Sidebar Tabs */}
+                    <aside className="w-full md:w-64 space-y-2">
+                        {TABS.map((tab) => (
+                            <button
+                                key={tab.id}
+                                onClick={() => setActiveTab(tab.id)}
+                                className={cn(
+                                    "w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium rounded-md transition-colors",
+                                    activeTab === tab.id
+                                        ? "bg-accent text-accent-foreground"
+                                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                                )}
+                            >
+                                {tab.icon}
+                                {tab.label}
+                            </button>
+                        ))}
+                    </aside>
+
+                    {/* Content Area */}
+                    <div className="flex-1 space-y-6">
+
+                        {activeTab === 'general' && (
+                            <div className="space-y-8 animate-in fade-in duration-300">
+                                <section className="space-y-4">
+                                    <h3 className="text-lg font-medium border-b border-border pb-2">NAV & Performance</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <InputField label="Current NAV" type="number" value={data.nav.current} onChange={(v) => updateField('nav.current', parseFloat(v))} />
+                                        <InputField label="Last Update (ISO Date)" type="text" value={data.lastUpdate} onChange={(v) => updateField('lastUpdate', v)} />
+                                        <InputField label="MTD (%)" type="number" value={data.nav.mtd} onChange={(v) => updateField('nav.mtd', parseFloat(v))} />
+                                        <InputField label="YTD (%)" type="number" value={data.nav.ytd} onChange={(v) => updateField('nav.ytd', parseFloat(v))} />
+                                        <InputField label="Inception (%)" type="number" value={data.nav.inception} onChange={(v) => updateField('nav.inception', parseFloat(v))} />
+                                    </div>
+                                </section>
+
+                                <section className="space-y-4">
+                                    <h3 className="text-lg font-medium border-b border-border pb-2">Risk Metrics</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <InputField label="Volatility (%)" type="number" value={data.metrics.volatility} onChange={(v) => updateField('metrics.volatility', parseFloat(v))} />
+                                        <InputField label="Max Drawdown (%)" type="number" value={data.metrics.maxDrawdown} onChange={(v) => updateField('metrics.maxDrawdown', parseFloat(v))} />
+                                        <InputField label="Rolling Drawdown (%)" type="number" value={data.metrics.rollingDrawdown} onChange={(v) => updateField('metrics.rollingDrawdown', parseFloat(v))} />
+                                        <InputField label="Liquidity Score (%)" type="number" value={data.metrics.liquidity} onChange={(v) => updateField('metrics.liquidity', parseFloat(v))} />
+                                    </div>
+                                </section>
+                            </div>
+                        )}
+
+                        {activeTab === 'updates' && (
+                            <div className="space-y-8 animate-in fade-in duration-300">
+                                <section className="space-y-4">
+                                    <h3 className="text-lg font-medium border-b border-border pb-2">Investment Commentary</h3>
+                                    <div className="space-y-4">
+                                        <TextAreaField label="Market Context" value={data.updates.marketContext} onChange={(v) => updateField('updates.marketContext', v)} />
+                                        <TextAreaField label="Portfolio Actions" value={data.updates.portfolioActions} onChange={(v) => updateField('updates.portfolioActions', v)} />
+                                        <TextAreaField label="Focus Going Forward" value={data.updates.focus} onChange={(v) => updateField('updates.focus', v)} />
+                                    </div>
+                                </section>
+                            </div>
+                        )}
+
+                        {activeTab === 'raw' && (
+                            <div className="space-y-4 animate-in fade-in duration-300">
+                                <div className="flex items-center justify-between">
+                                    <h3 className="text-lg font-medium">Raw JSON Editor</h3>
+                                    <button onClick={() => setTempJson(JSON.stringify(data, null, 2))} className="text-xs flex items-center gap-1 text-muted-foreground hover:text-foreground">
+                                        <RotateCcw size={12} /> Reset
+                                    </button>
+                                </div>
+                                <div className="relative">
+                                    <textarea
+                                        className={cn(
+                                            "w-full h-[600px] font-mono text-xs bg-card border rounded-md p-4 focus:outline-none focus:ring-1 focus:ring-primary",
+                                            jsonError ? "border-destructive focus:ring-destructive" : "border-border"
+                                        )}
+                                        value={tempJson}
+                                        onChange={handleJsonChange}
+                                    />
+                                    {jsonError && (
+                                        <div className="absolute bottom-4 right-4 bg-destructive text-destructive-foreground px-3 py-1 rounded text-xs font-medium flex items-center gap-2">
+                                            <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
+                                            {jsonError}
+                                        </div>
+                                    )}
+                                </div>
+                                <p className="text-xs text-muted-foreground">
+                                    Edit the raw JSON structure for complex data like chart arrays or allocation lists. Changes apply immediately if valid.
+                                </p>
+                            </div>
+                        )}
+
+                    </div>
+                </div>
+            </main>
+        </div>
+    );
+}
+
+function InputField({ label, value, onChange, type = "text" }) {
+    return (
+        <div className="space-y-1">
+            <label className="text-xs font-medium text-muted-foreground uppercase">{label}</label>
+            <input
+                type={type}
+                className="w-full bg-card border border-border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-accent transition-all"
+                value={value}
+                onChange={(e) => onChange(e.target.value)}
+            />
+        </div>
+    );
+}
+
+function TextAreaField({ label, value, onChange }) {
+    return (
+        <div className="space-y-1">
+            <label className="text-xs font-medium text-muted-foreground uppercase">{label}</label>
+            <textarea
+                className="w-full bg-card border border-border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-accent transition-all min-h-[100px]"
+                value={value}
+                onChange={(e) => onChange(e.target.value)}
+            />
+        </div>
+    );
+}
