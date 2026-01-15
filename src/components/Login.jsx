@@ -6,6 +6,7 @@ export default function Login({ onLogin }) {
     const [password, setPassword] = useState('');
     const [error, setError] = useState(false);
     const [showAnimation, setShowAnimation] = useState(false);
+    const [videoPlaying, setVideoPlaying] = useState(false); // New state to track actual playback
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -46,7 +47,7 @@ export default function Login({ onLogin }) {
                             <motion.div
                                 key="video-player"
                                 initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
+                                animate={{ opacity: videoPlaying ? 1 : 0 }} // Only fade in when PLAYING
                                 transition={{ duration: 1.0, ease: "easeOut" }} // Crossfade in
                                 className="absolute inset-0 flex items-center justify-center z-20"
                             >
@@ -57,6 +58,7 @@ export default function Login({ onLogin }) {
                                         playsInline
                                         preload="auto"
                                         className="w-full h-full object-contain"
+                                        onPlay={() => setVideoPlaying(true)} // Trigger fade-in only when actually playing
                                         onEnded={() => onLogin(password === 'admin')}
                                     >
                                         <source src="/logo_animation.mp4" type="video/mp4" />
@@ -67,30 +69,16 @@ export default function Login({ onLogin }) {
                     </AnimatePresence>
 
                     <AnimatePresence>
-                        {(!showAnimation || true) && (
-                            // Keep static logo visible behind video to prevent gap, 
-                            // or fade it out slowly once video is fully playing.
-                            // Actually, let's fade it out ONLY when animation starts, but SLOWLY so they overlap.
-                            !showAnimation ? (
-                                <motion.div
-                                    key="static-logo-visible"
-                                    initial={{ opacity: 1 }}
-                                    exit={{ opacity: 0, transition: { duration: 1.0 } }} // Fade out matches video fade in
-                                    className="absolute inset-0 flex items-center justify-center z-10"
-                                >
-                                    <img src="/logo.svg" alt="Equilibrium Logo" className="h-full object-contain" />
-                                </motion.div>
-                            ) : (
-                                <motion.div
-                                    key="static-logo-fading"
-                                    initial={{ opacity: 1 }}
-                                    animate={{ opacity: 0 }}
-                                    transition={{ duration: 1.5, delay: 0.2 }} // Wait slightly then fade out
-                                    className="absolute inset-0 flex items-center justify-center z-10"
-                                >
-                                    <img src="/logo.svg" alt="Equilibrium Logo" className="h-full object-contain" />
-                                </motion.div>
-                            )
+                        {/* Static logo stays visible until video is CONFIRMED playing */}
+                        {(!videoPlaying) && (
+                            <motion.div
+                                key="static-logo"
+                                initial={{ opacity: 1 }}
+                                exit={{ opacity: 0, transition: { duration: 1.0 } }} // Fade out matches video fade in
+                                className="absolute inset-0 flex items-center justify-center z-10"
+                            >
+                                <img src="/logo.svg" alt="Equilibrium Logo" className="h-full object-contain" />
+                            </motion.div>
                         )}
                     </AnimatePresence>
                 </div>
