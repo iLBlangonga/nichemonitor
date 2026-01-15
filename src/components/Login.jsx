@@ -45,9 +45,9 @@ export default function Login({ onLogin }) {
         initial: { opacity: 1, x: 0, y: 0, rotate: 0, scale: 1, filter: "blur(0px)" },
         exit: () => {
             // Generate random scatter values
-            const randomX = (Math.random() - 0.5) * 600; // Spread wide
-            const randomY = (Math.random() - 0.5) * 600; // Spread tall
-            const randomRotate = (Math.random() - 0.5) * 180;
+            const randomX = (Math.random() - 0.5) * 800; // Wider spread
+            const randomY = (Math.random() - 0.5) * 800; // Taller spread
+            const randomRotate = (Math.random() - 0.5) * 360; // Full spin potential
             const randomScale = 0.5 + Math.random(); // Varied scale
 
             return {
@@ -58,21 +58,21 @@ export default function Login({ onLogin }) {
                 scale: randomScale,
                 filter: "blur(4px)",
                 transition: {
-                    duration: 1.5,
-                    ease: [0.22, 1, 0.36, 1] // Custom clear-out easing
+                    duration: 4.0, // MUCH SLOWRR: "Molto più lentamente"
+                    ease: [0.2, 0.8, 0.2, 1] // Very smooth, almost distinct "floating" feel
                 }
             };
         }
     };
 
-    // Variants for the form container (matches the scatter feel but as a block for simplicity, or could scatter too)
+    // Variants for the form container
     const formVariants = {
         initial: { opacity: 1, y: 0, filter: "blur(0px)" },
         exit: {
             opacity: 0,
-            y: 100,
-            filter: "blur(10px)",
-            transition: { duration: 1.2, ease: "easeIn" }
+            y: 150, // Move down further
+            filter: "blur(12px)",
+            transition: { duration: 3.0, ease: "easeInOut" } // Slow fade out to match
         }
     };
 
@@ -89,7 +89,7 @@ export default function Login({ onLogin }) {
                                 key="video-player"
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: videoPlaying ? 1 : 0 }}
-                                transition={{ duration: 1.5, ease: "easeOut" }}
+                                transition={{ duration: 1.0, ease: "easeOut" }}
                                 className="absolute inset-0 flex items-center justify-center z-10" // Video is Z-10
                             >
                                 <div className="relative w-full max-w-[220px] aspect-video">
@@ -99,6 +99,10 @@ export default function Login({ onLogin }) {
                                         playsInline
                                         preload="auto"
                                         className="w-full h-full object-contain"
+                                        onLoadedMetadata={(e) => {
+                                            // Skip the first second as requested
+                                            e.target.currentTime = 1.0;
+                                        }}
                                         onPlay={() => setVideoPlaying(true)}
                                         onEnded={() => onLogin(password === 'admin')}
                                     >
@@ -114,8 +118,8 @@ export default function Login({ onLogin }) {
                             <motion.div
                                 key="static-logo"
                                 initial={{ opacity: 1 }}
-                                exit={{ opacity: 0, transition: { duration: 1.0 } }}
-                                className="absolute inset-0 flex items-center justify-center z-20" // Logo is Z-20 (above video initially)
+                                exit={{ opacity: 0, transition: { duration: 0.8 } }}
+                                className="absolute inset-0 flex items-center justify-center z-20" // Logo is Z-20
                             >
                                 <img src="/logo.svg" alt="Equilibrium Logo" className="h-full object-contain" />
                             </motion.div>
@@ -125,12 +129,12 @@ export default function Login({ onLogin }) {
 
                 {/* Text & Form Container - Absolute position overlay to allow particles to fly freely without pushing layout */}
                 <div className="relative w-full flex flex-col items-center z-30"> {/* Text is Z-30 (highest) */}
-                    <AnimatePresence mode="popLayout"> {/* popLayout helps with layout shifts, though strict absolute might be safer */}
+                    <AnimatePresence mode="popLayout">
                         {!showAnimation && (
                             <motion.div
                                 className="flex flex-col items-center text-center w-full"
                                 initial={{ opacity: 1 }}
-                                exit={{ opacity: 0, transition: { duration: 2 } }} // Container fades out slowly, children scatter
+                                exit={{ opacity: 0, transition: { duration: 3.5 } }} // Parent fades slightly slower than children to ensure visibility
                             >
                                 <h1 className="text-4xl font-extrabold tracking-tight text-foreground mb-1 perspective-1000">
                                     <SplitText
@@ -146,7 +150,7 @@ export default function Login({ onLogin }) {
                                 </h2>
                                 <motion.p
                                     className="mt-4 text-sm text-muted-foreground"
-                                    variants={letterVariants} // Treat paragraph as one block or split if real crazy needed
+                                    variants={letterVariants}
                                     initial="initial"
                                     exit="exit"
                                 >
