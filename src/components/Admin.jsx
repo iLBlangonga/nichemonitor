@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
-import { LogOut, Save, RotateCcw, FileJson, LayoutDashboard, Edit3 } from 'lucide-react';
+import { LogOut, Save, RotateCcw, FileJson, LayoutDashboard, Edit3, Upload, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { cn } from '../lib/utils';
+import JSZip from 'jszip';
+import Papa from 'papaparse';
 
 const TABS = [
     { id: 'general', label: 'General & NAV', icon: <LayoutDashboard size={16} /> },
     { id: 'updates', label: 'Updates & Context', icon: <Edit3 size={16} /> },
+    { id: 'upload', label: 'Upload Data (ZIP)', icon: <Upload size={16} /> },
     { id: 'raw', label: 'Advanced (JSON)', icon: <FileJson size={16} /> },
 ];
 
@@ -12,6 +15,7 @@ export default function Admin({ data, setData, onLogout }) {
     const [activeTab, setActiveTab] = useState('general');
     const [jsonError, setJsonError] = useState(null);
     const [tempJson, setTempJson] = useState(JSON.stringify(data, null, 2));
+    const [uploadStatus, setUploadStatus] = useState(null);
 
     // Handler for form field updates
     const updateField = (path, value) => {
@@ -19,6 +23,7 @@ export default function Admin({ data, setData, onLogout }) {
         const keys = path.split('.');
         let current = newData;
         for (let i = 0; i < keys.length - 1; i++) {
+            if (!current[keys[i]]) current[keys[i]] = {};
             current = current[keys[i]];
         }
         current[keys[keys.length - 1]] = value;
@@ -50,13 +55,100 @@ export default function Admin({ data, setData, onLogout }) {
         document.body.removeChild(link);
     };
 
+    const processZipFile = async (file) => {
+        setUploadStatus({ type: 'info', message: 'Processing ZIP file...' });
+        try {
+            const zip = await JSZip.loadAsync(file);
+
+            const readCSV = async (filename) => {
+                const foundFile = Object.keys(zip.files).find(name => name.endsWith(filename) && !name.includes('__MACOSX'));
+                if (!foundFile) return null;
+                const text = await zip.file(foundFile).async('string');
+                return Papa.parse(text, { header: true, dynamicTyping: true, skipEmptyLines: true }).data;
+            };
+
+            const navData = await readCSV('nav.csv');
+            const metricsData = await readCSV('metrics.csv');
+            const perfRatioData = await readCSV('performance_ratio.csv');
+            const assetData = await readCSV('asset_class_exposure.csv');
+
+            const newData = { ...data };
+
+            // 1. NAV & Performance
+            if (navData && navData.length > 0) {
+                navData.sort((a, b) => new Date(a.date) - new Date(b.date));
+                const lastEntry = navData[navData.length - 1];
+
+                newData.performance = navData.map(row => ({
+                    date: row.date.split(' ')[0],
+                    value: row.estimated_nav
+                }));
+                newData.nav.current = lastEntry.estimated_nav;
+                newData.lastUpdate = lastEntry.date;
+            }
+
+            // 2. Metrics
+            if (metricsData) {
+                const getMetric = (name) => {
+                    const row = metricsData.find(r => r[''] === name || r.metric === name);
+                    return row ? row.value : null;
+                };
+
+                const vol = getMetric('Annualized Volatility');
+                if (vol !== null) newData.metrics.volatility = parseFloat((vol * 100).toFixed(2));
+
+                const maxDd = getMetric('Max Drawdown');
+                if (maxDd !== null) newData.metrics.maxDrawdown = parseFloat((maxDd * 100).toFixed(2));
+            }
+
+            if (perfRatioData) {
+                const getRatio = (name) => {
+                    const row = perfRatioData.find(r => r[''] === name);
+                    return row ? row.value : null;
+                };
+
+                const ytd = getRatio('% YTD');
+                if (ytd !== null) newData.nav.ytd = parseFloat((ytd * 100).toFixed(2));
+
+                const inception = getRatio('From Inception');
+                if (inception !== null) newData.nav.inception = parseFloat((inception * 100).toFixed(2));
+
+                const mtd = getRatio('% 1M');
+                if (mtd !== null) newData.nav.mtd = parseFloat((mtd * 100).toFixed(2));
+            }
+
+            // 3. Allocation
+            if (assetData) {
+                const strategies = assetData.map(row => ({
+                    name: row.asset_class,
+                    value: parseFloat((row['exposure %'] * 100).toFixed(1)),
+                    range: `${Math.floor(row['exposure %'] * 100 - 5)}-${Math.ceil(row['exposure %'] * 100 + 5)}%`
+                })).filter(s => s.value > 0);
+
+                strategies.sort((a, b) => b.value - a.value);
+                newData.allocation.strategies = strategies;
+
+                const totalExp = strategies.reduce((acc, s) => acc + s.value, 0);
+                newData.allocation.exposure.net = parseFloat(totalExp.toFixed(1));
+            }
+
+            setData(newData);
+            setTempJson(JSON.stringify(newData, null, 2));
+            setUploadStatus({ type: 'success', message: 'Data updated successfully! Don\'t forget to click "Download Config" to save.' });
+
+        } catch (err) {
+            console.error(err);
+            setUploadStatus({ type: 'error', message: `Error processing file: ${err.message}` });
+        }
+    };
+
     return (
         <div className="min-h-screen bg-background text-foreground font-sans">
             <header className="border-b border-border bg-card">
                 <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <span className="font-bold text-lg">NICHE Admin</span>
-                        <span className="text-xs text-muted-foreground px-2 py-0.5 bg-muted rounded-full">v1.0</span>
+                        <span className="text-xs text-muted-foreground px-2 py-0.5 bg-muted rounded-full">v1.1</span>
                     </div>
                     <div className="flex items-center gap-4">
                         <button onClick={handleSave} className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-md font-medium text-sm hover:bg-primary/90 transition-colors">
@@ -77,7 +169,7 @@ export default function Admin({ data, setData, onLogout }) {
                         {TABS.map((tab) => (
                             <button
                                 key={tab.id}
-                                onClick={() => setActiveTab(tab.id)}
+                                onClick={() => { setActiveTab(tab.id); setUploadStatus(null); }}
                                 className={cn(
                                     "w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium rounded-md transition-colors",
                                     activeTab === tab.id
@@ -129,6 +221,48 @@ export default function Admin({ data, setData, onLogout }) {
                                         <TextAreaField label="Focus Going Forward" value={data.updates.focus} onChange={(v) => updateField('updates.focus', v)} />
                                     </div>
                                 </section>
+                            </div>
+                        )}
+
+                        {activeTab === 'upload' && (
+                            <div className="space-y-8 animate-in fade-in duration-300">
+                                <div className="bg-card border border-border rounded-lg p-8 text-center space-y-4">
+                                    <div className="mx-auto h-12 w-12 bg-muted rounded-full flex items-center justify-center">
+                                        <Upload className="h-6 w-6 text-muted-foreground" />
+                                    </div>
+                                    <h3 className="text-lg font-medium">Upload Dataset ZIP</h3>
+                                    <p className="text-sm text-muted-foreground max-w-sm mx-auto">
+                                        Upload a <code>niche_dataset.zip</code> file containing <code>nav.csv</code>, <code>metrics.csv</code>, <code>performance_ratio.csv</code>, and <code>asset_class_exposure.csv</code>.
+                                    </p>
+
+                                    <div className="flex justify-center pt-4">
+                                        <label className="relative cursor-pointer bg-primary text-primary-foreground px-4 py-2 rounded-md font-medium text-sm hover:bg-primary/90 transition-colors">
+                                            <span>Select ZIP File</span>
+                                            <input
+                                                type="file"
+                                                className="hidden"
+                                                accept=".zip"
+                                                onChange={(e) => {
+                                                    if (e.target.files?.[0]) {
+                                                        processZipFile(e.target.files[0]);
+                                                    }
+                                                }}
+                                            />
+                                        </label>
+                                    </div>
+                                </div>
+
+                                {uploadStatus && (
+                                    <div className={cn(
+                                        "p-4 rounded-lg flex items-start gap-3 text-sm",
+                                        uploadStatus.type === 'success' ? "bg-emerald-500/10 text-emerald-500" :
+                                            uploadStatus.type === 'error' ? "bg-destructive/10 text-destructive" : "bg-muted text-muted-foreground"
+                                    )}>
+                                        {uploadStatus.type === 'success' ? <CheckCircle2 size={18} /> :
+                                            uploadStatus.type === 'error' ? <AlertCircle size={18} /> : <Upload size={18} className="animate-bounce" />}
+                                        <p>{uploadStatus.message}</p>
+                                    </div>
+                                )}
                             </div>
                         )}
 
