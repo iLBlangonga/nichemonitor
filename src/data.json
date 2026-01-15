@@ -1,167 +1,234 @@
 {
-    "lastUpdate": "2026-01-14T17:00:00Z",
-    "nav": {
-        "current": 124.50,
-        "mtd": 1.25,
-        "ytd": 5.40,
-        "inception": 24.50
+  "lastUpdate": "2026-01-12 00:00:00+01:00",
+  "nav": {
+    "current": 98.52960945915738,
+    "mtd": -0.31,
+    "ytd": -0.15,
+    "inception": -1.47
+  },
+  "metrics": {
+    "volatility": 5.12,
+    "maxDrawdown": -3.37,
+    "rollingDrawdown": -2.1,
+    "liquidity": 95
+  },
+  "performance": [
+    {
+      "date": "2025-06-25",
+      "value": 100
     },
-    "metrics": {
-        "volatility": 8.5,
-        "maxDrawdown": -6.2,
-        "rollingDrawdown": -2.1,
-        "liquidity": 95
+    {
+      "date": "2025-06-26",
+      "value": 100
     },
-    "performance": [
-        {
-            "date": "2025-01-01",
-            "value": 100
-        },
-        {
-            "date": "2025-02-01",
-            "value": 102
-        },
-        {
-            "date": "2025-03-01",
-            "value": 101.5
-        },
-        {
-            "date": "2025-04-01",
-            "value": 104
-        },
-        {
-            "date": "2025-05-01",
-            "value": 106
-        },
-        {
-            "date": "2025-06-01",
-            "value": 105.5
-        },
-        {
-            "date": "2025-07-01",
-            "value": 108
-        },
-        {
-            "date": "2025-08-01",
-            "value": 110
-        },
-        {
-            "date": "2025-09-01",
-            "value": 112
-        },
-        {
-            "date": "2025-10-01",
-            "value": 111
-        },
-        {
-            "date": "2025-11-01",
-            "value": 115
-        },
-        {
-            "date": "2025-12-01",
-            "value": 118
-        },
-        {
-            "date": "2026-01-01",
-            "value": 124.5
-        }
-    ],
-    "allocation": {
-        "strategies": [
-            {
-                "name": "Equity Quant",
-                "value": 35,
-                "range": "30-40%"
-            },
-            {
-                "name": "Macro / Rates",
-                "value": 25,
-                "range": "20-30%"
-            },
-            {
-                "name": "Crypto",
-                "value": 10,
-                "range": "5-15%"
-            },
-            {
-                "name": "Tactical Overlay",
-                "value": 15,
-                "range": "10-20%"
-            },
-            {
-                "name": "Cash & Hedges",
-                "value": 15,
-                "range": "10-20%"
-            }
-        ],
-        "geo": [
-            {
-                "name": "North America",
-                "value": 45
-            },
-            {
-                "name": "Europe",
-                "value": 30
-            },
-            {
-                "name": "Asia",
-                "value": 15
-            },
-            {
-                "name": "Global",
-                "value": 10
-            }
-        ],
-        "exposure": {
-            "net": 65,
-            "gross": 140,
-            "bias": "Long Volatility",
-            "liquidity": "T+1"
-        }
+    {
+      "date": "2025-06-30",
+      "value": 99.57896260305075
     },
-    "riskGovernance": {
-        "monitoring": "Continuous proprietary quantitative models",
-        "limits": "Systematic enforcement of position sizing and stress scenarios"
+    {
+      "date": "2025-07-07",
+      "value": 99.58191228045084
     },
-    "updates": {
-        "marketContext": "Global markets have shown resilience despite rising rate expectations. Volatility remains compressed.",
-        "portfolioActions": "Reduced gross exposure in Equity Quant. Increased hedges in anticipation of macro events.",
-        "focus": "Monitoring inflation data prints and central bank liquidity flows."
+    {
+      "date": "2025-07-14",
+      "value": 99.91056149034445
     },
-    "timeline": [
-        {
-            "date": "2024-01-01",
-            "event": "Fund Inception"
-        },
-        {
-            "date": "2025-06-15",
-            "event": "Rebalancing Window"
-        },
-        {
-            "date": "2026-01-10",
-            "event": "Q4 Factsheet Release"
-        }
-    ],
-    "documents": [
-        {
-            "name": "Factsheet Jan 2026",
-            "type": "pdf",
-            "url": "#"
-        },
-        {
-            "name": "Termsheet (Retail)",
-            "type": "pdf",
-            "url": "/niche_termsheet_retail.pdf"
-        },
-        {
-            "name": "Prospectus",
-            "type": "pdf",
-            "url": "#"
-        }
-    ],
-    "transparency": {
-        "nav": "Weekly",
-        "allocation": "Monthly (Lagged)",
-        "risk": "Weekly"
+    {
+      "date": "2025-07-21",
+      "value": 98.87555435970653
+    },
+    {
+      "date": "2025-07-28",
+      "value": 98.39291376706828
+    },
+    {
+      "date": "2025-08-04",
+      "value": 99.7003656638417
+    },
+    {
+      "date": "2025-08-11",
+      "value": 99.24038237120625
+    },
+    {
+      "date": "2025-08-18",
+      "value": 99.80197995830915
+    },
+    {
+      "date": "2025-08-25",
+      "value": 100.20895253387384
+    },
+    {
+      "date": "2025-09-01",
+      "value": 100.0368237248931
+    },
+    {
+      "date": "2025-09-08",
+      "value": 99.72301310113816
+    },
+    {
+      "date": "2025-09-15",
+      "value": 99.68419473338817
+    },
+    {
+      "date": "2025-09-22",
+      "value": 99.68822090896263
+    },
+    {
+      "date": "2025-09-29",
+      "value": 100.35176114413605
+    },
+    {
+      "date": "2025-10-06",
+      "value": 99.87906248024659
+    },
+    {
+      "date": "2025-10-13",
+      "value": 100.79791565149257
+    },
+    {
+      "date": "2025-10-20",
+      "value": 99.97822261687782
+    },
+    {
+      "date": "2025-10-27",
+      "value": 98.98673276218385
+    },
+    {
+      "date": "2025-11-03",
+      "value": 100.56463000437658
+    },
+    {
+      "date": "2025-11-10",
+      "value": 101.61861994995454
+    },
+    {
+      "date": "2025-11-17",
+      "value": 101.96972262711175
+    },
+    {
+      "date": "2025-11-24",
+      "value": 101.48369170577676
+    },
+    {
+      "date": "2025-12-01",
+      "value": 99.99010733683328
+    },
+    {
+      "date": "2025-12-08",
+      "value": 99.3273163859318
+    },
+    {
+      "date": "2025-12-15",
+      "value": 98.8350781824136
+    },
+    {
+      "date": "2025-12-22",
+      "value": 98.80838890358288
+    },
+    {
+      "date": "2025-12-29",
+      "value": 98.67663422789789
+    },
+    {
+      "date": "2026-01-06",
+      "value": 98.60920248832909
+    },
+    {
+      "date": "2026-01-12",
+      "value": 98.52960945915738
     }
+  ],
+  "allocation": {
+    "strategies": [
+      {
+        "name": "Cash & Equivalent",
+        "value": 72.9,
+        "range": "67-78%"
+      },
+      {
+        "name": "Stock",
+        "value": 22.6,
+        "range": "17-28%"
+      },
+      {
+        "name": "Option",
+        "value": 4.3,
+        "range": "-1-10%"
+      },
+      {
+        "name": "Cryptocurrency",
+        "value": 0.2,
+        "range": "-5-6%"
+      }
+    ],
+    "geo": [
+      {
+        "name": "North America",
+        "value": 45
+      },
+      {
+        "name": "Europe",
+        "value": 30
+      },
+      {
+        "name": "Asia",
+        "value": 15
+      },
+      {
+        "name": "Global",
+        "value": 10
+      }
+    ],
+    "exposure": {
+      "net": 100,
+      "gross": 140,
+      "bias": "Long Volatility",
+      "liquidity": "T+1"
+    }
+  },
+  "riskGovernance": {
+    "monitoring": "Continuous proprietary quantitative models",
+    "limits": "Systematic enforcement of position sizing and stress scenarios"
+  },
+  "updates": {
+    "marketContext": "Global markets have shown resilience despite rising rate expectations. Volatility remains compressed.",
+    "portfolioActions": "Reduced gross exposure in Equity Quant. Increased hedges in anticipation of macro events.",
+    "focus": "Monitoring inflation data prints and central bank liquidity flows."
+  },
+  "timeline": [
+    {
+      "date": "2024-01-01",
+      "event": "Fund Inception"
+    },
+    {
+      "date": "2025-06-15",
+      "event": "Rebalancing Window"
+    },
+    {
+      "date": "2026-01-10",
+      "event": "Q4 Factsheet Release"
+    }
+  ],
+  "documents": [
+    {
+      "name": "Factsheet Jan 2026",
+      "type": "pdf",
+      "url": "#"
+    },
+    {
+      "name": "Termsheet (Retail)",
+      "type": "pdf",
+      "url": "/niche_termsheet_retail.pdf"
+    },
+    {
+      "name": "Prospectus",
+      "type": "pdf",
+      "url": "#"
+    }
+  ],
+  "transparency": {
+    "nav": "Weekly",
+    "allocation": "Monthly (Lagged)",
+    "risk": "Weekly"
+  }
 }
