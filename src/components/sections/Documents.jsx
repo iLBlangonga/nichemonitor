@@ -11,7 +11,14 @@ export default function Documents({ data }) {
                 <h2 className="text-xl font-medium tracking-tight">Documents</h2>
                 <div className="space-y-2">
                     {documents.map((doc, i) => (
-                        <div key={i} className="group flex items-center justify-between p-4 bg-card hover:bg-muted/50 border border-border rounded-lg transition-colors cursor-pointer">
+                        <a
+                            key={i}
+                            href={doc.url}
+                            download={doc.type === 'pdf'} // Add download attribute
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="group flex items-center justify-between p-4 bg-card hover:bg-muted/50 border border-border rounded-lg transition-colors cursor-pointer"
+                        >
                             <div className="flex items-center gap-4">
                                 <div className="h-10 w-10 bg-muted rounded-md flex items-center justify-center text-muted-foreground group-hover:text-foreground transition-colors">
                                     <FileText size={20} />
@@ -22,7 +29,7 @@ export default function Documents({ data }) {
                                 </div>
                             </div>
                             <Download size={18} className="text-muted-foreground hover:text-primary transition-colors" />
-                        </div>
+                        </a>
                     ))}
                 </div>
             </section>
