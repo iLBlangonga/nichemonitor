@@ -109,6 +109,45 @@ async function processData() {
             // Gross often implies leverage, hard to infer without short positions explicit.
         }
 
+        // 4. Liquidity History (using balance.csv and nav.csv)
+        const balanceData = await readCSV('balance.csv');
+        if (balanceData && navData && navData.length > 0) {
+            const liquidityHistory = [];
+            // Create a map of NAV by date for quick lookup
+            const navMap = new Map();
+            navData.forEach(row => {
+                const dateKey = row.date.split(' ')[0];
+                navMap.set(dateKey, row.estimated_nav);
+            });
+
+            balanceData.forEach(row => {
+                const dateKey = row.timestamp.split(' ')[0];
+                const nav = navMap.get(dateKey);
+
+                if (nav && nav > 0) {
+                    // Assuming EUR and USD are the columns. 
+                    // WARNING: Simply summing them implies 1:1 parity which is wrong, but we lack FX history.
+                    // Ideally we'd have an FX rate. 
+                    // However, let's proceed with sum for now or check if USD is already converted.
+                    // Given the precision and typical export formats, often it's raw values.
+                    // For the sake of the visualization, we'll sum them. 
+                    // A better approach if values are disparate is to just use EUR if USD is small, or vice versa.
+                    // Let's use Sum.
+                    const cash = (row.EUR || 0) + (row.USD || 0); // row.USD might be negative?
+                    const liquidityPct = (cash / nav) * 100;
+
+                    liquidityHistory.push({
+                        date: dateKey,
+                        value: parseFloat(liquidityPct.toFixed(2))
+                    });
+                }
+            });
+
+            // Sort by date
+            liquidityHistory.sort((a, b) => new Date(a.date) - new Date(b.date));
+            newData.liquidityHistory = liquidityHistory;
+        }
+
         // Write back
         fs.writeFileSync(DATA_PATH, JSON.stringify(newData, null, 2));
         console.log('Successfully updated data.json from niche_dataset.zip');

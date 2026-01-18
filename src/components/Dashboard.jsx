@@ -104,7 +104,7 @@ export default function Dashboard({ data, onLogout }) {
                 <hr className="border-border" />
 
                 {/* 3) Performance */}
-                <Performance data={data.performance} />
+                <Performance data={data.performance} liquidityData={data.liquidityHistory} />
 
                 <hr className="border-border" />
 

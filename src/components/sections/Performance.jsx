@@ -5,15 +5,21 @@ import { cn } from '../../lib/utils';
 
 const TIME_RANGES = ['1M', '3M', '6M', 'YTD', '1Y', 'ALL'];
 
-export default function Performance({ data }) {
+export default function Performance({ data, liquidityData }) {
     const [activeRange, setActiveRange] = useState('ALL');
+    const [viewMode, setViewMode] = useState('NAV'); // 'NAV' or 'LIQUIDITY'
+
+    const currentData = viewMode === 'NAV' ? data : (liquidityData || []);
 
     // Filter data based on activeRange using real dates
     const getFilteredData = () => {
-        if (!data || data.length === 0) return [];
-        if (activeRange === 'ALL') return data;
+        if (!currentData || currentData.length === 0) return [];
+        if (activeRange === 'ALL') return currentData;
 
-        const lastDate = new Date(data[data.length - 1].date);
+        // Sort data just in case
+        // currentData.sort((a,b) => new Date(a.date) - new Date(b.date)); // Assume sorted from parent/script
+
+        const lastDate = new Date(currentData[currentData.length - 1].date);
         const cutoffDate = new Date(lastDate);
 
         switch (activeRange) {
@@ -27,38 +33,63 @@ export default function Performance({ data }) {
                 cutoffDate.setMonth(lastDate.getMonth() - 6);
                 break;
             case 'YTD':
-                cutoffDate.setFullYear(lastDate.getFullYear(), 0, 1); // Exact Jan 1st of current year
-                // If the dataset doesn't have a point on Jan 1st, filtering >= Jan 1st is correct.
-                // However, without a point on Jan 1st, the chart starts at the first available data point in the year.
-                // This is mathematically correct for "YTD performance from data", but visually it might look short.
+                cutoffDate.setFullYear(lastDate.getFullYear(), 0, 1); // Jan 1st of the current year of data
+                cutoffDate.setHours(0, 0, 0, 0);
                 break;
             case '1Y':
                 cutoffDate.setFullYear(lastDate.getFullYear() - 1);
                 break;
             default:
-                return data;
+                return currentData;
         }
 
-        return data.filter(item => new Date(item.date) >= cutoffDate);
+        return currentData.filter(item => new Date(item.date) >= cutoffDate);
     };
 
     const chartData = getFilteredData();
 
     // Calculate min/max for Y-axis domain to focus the chart
-    // Safety check for empty data
     const hasData = chartData.length > 0;
-    const minValue = hasData ? Math.min(...chartData.map(d => d.value)) : 0;
-    const maxValue = hasData ? Math.max(...chartData.map(d => d.value)) : 100;
+    const values = chartData.map(d => d.value);
+    const minValue = hasData ? Math.min(...values) : 0;
+    const maxValue = hasData ? Math.max(...values) : 100;
     const padding = (maxValue - minValue) * 0.1;
+    const yDomain = [Math.max(0, minValue - padding), maxValue + padding];
+
+    const isLiquidity = viewMode === 'LIQUIDITY';
+    const mainColor = isLiquidity ? '#3b82f6' : '#10b981'; // Blue for liquidity, Emerald for NAV
+    const gradientId = isLiquidity ? 'colorLiquidity' : 'colorNav';
 
     return (
         <section className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div className="flex items-center gap-2">
-                    <div className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
-                        <TrendingUp size={16} className="text-emerald-400" />
+                <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                        <div className={cn("p-2 rounded-lg border", isLiquidity ? "bg-blue-500/10 border-blue-500/20" : "bg-emerald-500/10 border-emerald-500/20")}>
+                            <TrendingUp size={16} className={isLiquidity ? "text-blue-400" : "text-emerald-400"} />
+                        </div>
+                        <h2 className="text-xl font-light tracking-tight text-white">
+                            Performance <span className="text-muted-foreground font-normal text-sm ml-2">{isLiquidity ? 'Liquidity Exposure' : 'NAV History'}</span>
+                        </h2>
                     </div>
-                    <h2 className="text-xl font-light tracking-tight text-white">Performance <span className="text-muted-foreground font-normal text-sm ml-2">NAV History</span></h2>
+
+                    {/* View Toggle */}
+                    <div className="flex items-center p-1 bg-white/5 border border-white/10 rounded-lg">
+                        {['NAV', 'LIQUIDITY'].map((mode) => (
+                            <button
+                                key={mode}
+                                onClick={() => setViewMode(mode)}
+                                className={cn(
+                                    "px-3 py-1 text-[10px] font-medium rounded-md transition-all duration-200",
+                                    viewMode === mode
+                                        ? "bg-white/10 text-white shadow-sm"
+                                        : "text-muted-foreground hover:text-white hover:bg-white/5"
+                                )}
+                            >
+                                {mode === 'NAV' ? 'NAV' : 'Liquidity %'}
+                            </button>
+                        ))}
+                    </div>
                 </div>
 
                 <div className="flex items-center p-1 bg-white/5 border border-white/10 rounded-lg">
@@ -69,7 +100,7 @@ export default function Performance({ data }) {
                             className={cn(
                                 "px-3 py-1 text-[11px] font-medium rounded-md transition-all duration-200",
                                 activeRange === range
-                                    ? "bg-emerald-500/20 text-emerald-400 shadow-[0_0_10px_-5px_rgba(16,185,129,0.3)] border border-emerald-500/30"
+                                    ? cn("border", isLiquidity ? "bg-blue-500/20 text-blue-400 border-blue-500/30" : "bg-emerald-500/20 text-emerald-400 border-emerald-500/30")
                                     : "text-muted-foreground hover:text-white hover:bg-white/5 border border-transparent"
                             )}
                         >
@@ -81,14 +112,21 @@ export default function Performance({ data }) {
 
             <div className="relative bg-[#0a0a0a] border border-white/5 rounded-2xl p-6 h-[400px] shadow-2xl overflow-hidden group">
                 {/* Background glow */}
-                <div className="absolute top-0 right-0 w-[500px] h-[300px] bg-emerald-500/5 rounded-full blur-[100px] pointer-events-none" />
+                <div className={cn(
+                    "absolute top-0 right-0 w-[500px] h-[300px] rounded-full blur-[100px] pointer-events-none opacity-20 transition-colors duration-500",
+                    isLiquidity ? "bg-blue-500/20" : "bg-emerald-500/20"
+                )} />
 
                 <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                         <defs>
-                            <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
+                            <linearGradient id="colorNav" x1="0" y1="0" x2="0" y2="1">
                                 <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
                                 <stop offset="95%" stopColor="#06b6d4" stopOpacity={0} />
+                            </linearGradient>
+                            <linearGradient id="colorLiquidity" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+                                <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
                             </linearGradient>
                         </defs>
                         <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
@@ -108,7 +146,7 @@ export default function Performance({ data }) {
                             tick={{ fontSize: 10, fill: '#737373', fontFamily: 'sans-serif' }}
                             tickLine={false}
                             axisLine={false}
-                            domain={[minValue - padding, maxValue + padding]}
+                            domain={yDomain}
                             tickFormatter={(value) => value.toFixed(1)}
                             dx={-10}
                         />
@@ -124,18 +162,19 @@ export default function Performance({ data }) {
                             }}
                             labelStyle={{ color: '#a3a3a3', marginBottom: '4px', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.05em' }}
                             itemStyle={{ color: '#fff', fontWeight: 600 }}
-                            formatter={(value) => [`${value.toFixed(2)}`, 'NAV']}
+                            formatter={(value) => [`${value.toFixed(2)}${isLiquidity ? '%' : ''}`, isLiquidity ? 'Liquidity' : 'NAV']}
                             labelFormatter={(label) => new Date(label).toLocaleDateString('default', { month: 'long', day: 'numeric', year: 'numeric' })}
                             cursor={{ stroke: 'rgba(255,255,255,0.1)', strokeWidth: 1, strokeDasharray: '4 4' }}
                         />
                         <Area
+                            key={viewMode} // Force re-render on mode change
                             type="monotone"
                             dataKey="value"
-                            stroke="#10b981"
+                            stroke={mainColor}
                             strokeWidth={2}
                             fillOpacity={1}
-                            fill="url(#colorValue)"
-                            animationDuration={1500}
+                            fill={`url(#${gradientId})`}
+                            animationDuration={1000}
                         />
                     </AreaChart>
                 </ResponsiveContainer>
