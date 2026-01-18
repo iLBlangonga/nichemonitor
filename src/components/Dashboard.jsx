@@ -32,7 +32,6 @@ export default function Dashboard({ data, onLogout }) {
                             <div className="flex items-center gap-3">
                                 <img src="/logo.svg" alt="Equilibrium Logo" className="h-9 w-auto object-contain" />
                                 <div className="flex items-center gap-2">
-                                    <span className="hidden md:block text-lg font-medium tracking-wide text-white">Equilibrium</span>
                                     <span className="text-muted-foreground/50 font-light text-sm px-1">X</span>
                                     <span className="text-xl md:text-2xl font-orbitron font-bold tracking-wide bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
                                         NICHE

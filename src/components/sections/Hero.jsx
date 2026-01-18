@@ -69,43 +69,37 @@ export default function Hero() {
                     </motion.div>
                 </div>
 
-                {/* Right Column: Visual/Logo - Interactive Box */}
+                {/* Right Column: Visual/Logo - Interactive Area */}
                 <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.8, delay: 0.3 }}
-                    className="relative group rounded-3xl border border-white/10 bg-black/40 backdrop-blur-xl overflow-hidden"
+                    className="relative flex items-center justify-center p-8 group"
                     onMouseMove={handleMouseMove}
                 >
-                    {/* Interactive Spotlight Effect */}
+                    {/* Subtle Interactive Glow that follows mouse, but without hard borders */}
                     <motion.div
-                        className="pointer-events-none absolute -inset-px rounded-3xl opacity-0 transition duration-300 group-hover:opacity-100"
+                        className="pointer-events-none absolute -inset-[100px] opacity-0 transition duration-500 group-hover:opacity-100"
                         style={{
                             background: useTransform(
                                 [mouseX, mouseY],
-                                ([x, y]) => `radial-gradient(600px circle at ${x}px ${y}px, rgba(16, 185, 129, 0.1), transparent 40%)`
+                                ([x, y]) => `radial-gradient(400px circle at ${x}px ${y}px, rgba(16, 185, 129, 0.08), transparent 60%)`
                             ),
                         }}
                     />
 
-                    <div className="relative w-full h-[400px] flex items-center justify-center p-8">
+                    <div className="relative w-full flex items-center justify-center">
                         {/* Glowing ring behind logo */}
                         <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="w-[300px] h-[300px] border border-emerald-500/20 rounded-full shadow-[0_0_100px_-20px_rgba(16,185,129,0.1)] animate-spin-slow opacity-30" style={{ animationDuration: '30s' }} />
-                            <div className="absolute w-[220px] h-[220px] border border-cyan-500/20 rounded-full shadow-[0_0_100px_-20px_rgba(6,182,212,0.1)] animate-reverse-spin opacity-40" style={{ animationDuration: '25s' }} />
-                            <div className="absolute w-[140px] h-[140px] border border-purple-500/20 rounded-full opacity-20" />
+                            <div className="w-[300px] h-[300px] border border-emerald-500/10 rounded-full shadow-[0_0_100px_-20px_rgba(16,185,129,0.05)] animate-spin-slow opacity-30" style={{ animationDuration: '30s' }} />
+                            <div className="absolute w-[220px] h-[220px] border border-cyan-500/10 rounded-full shadow-[0_0_100px_-20px_rgba(6,182,212,0.05)] animate-reverse-spin opacity-40" style={{ animationDuration: '25s' }} />
                         </div>
 
                         <img
                             src="/logo.svg"
                             alt="Equilibrium Logo"
-                            className="w-40 h-40 md:w-56 md:h-56 object-contain relative z-10 drop-shadow-[0_0_30px_rgba(16,185,129,0.3)] transition-all duration-500 group-hover:scale-105 group-hover:drop-shadow-[0_0_50px_rgba(16,185,129,0.5)]"
+                            className="w-40 h-40 md:w-56 md:h-56 object-contain relative z-10 drop-shadow-[0_0_30px_rgba(16,185,129,0.2)]"
                         />
-                    </div>
-
-                    <div className="absolute bottom-6 left-0 right-0 text-center space-y-1 pointer-events-none">
-                        <p className="text-xs text-gray-500 tracking-[0.2em] uppercase font-light">Developed by</p>
-                        <p className="text-sm font-medium text-white/80 tracking-widest">Equilibrium Research Team</p>
                     </div>
                 </motion.div>
             </div>

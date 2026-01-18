@@ -89,7 +89,7 @@ export default function Login({ onLogin }) {
                             initial="initial"
                             exit="exit"
                         >
-                            <h1 className="text-3xl font-bold tracking-tight text-white mb-2">
+                            <h1 className="text-4xl font-orbitron font-bold tracking-wide bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent mb-2">
                                 NICHE
                             </h1>
                             <p className="text-sm text-muted-foreground uppercase tracking-widest mb-8">
