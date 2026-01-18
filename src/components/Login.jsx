@@ -2,220 +2,142 @@ import React, { useState } from 'react';
 import { cn } from '../lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// Helper component to split text into characters for granular animation
-const SplitText = ({ text, className, variants, customPropBase }) => {
-    return (
-        <span className={cn("inline-block", className)}>
-            {text.split("").map((char, index) => (
-                <motion.span
-                    key={index}
-                    custom={{ ...customPropBase, index }} // Pass index for potentially staggering
-                    variants={variants}
-                    initial="initial"
-                    exit="exit"
-                    className="inline-block"
-                    style={{ whiteSpace: "pre" }} // Preserve spaces
-                >
-                    {char}
-                </motion.span>
-            ))}
-        </span>
-    );
-};
-
 export default function Login({ onLogin }) {
     const [password, setPassword] = useState('');
     const [error, setError] = useState(false);
-    const [showAnimation, setShowAnimation] = useState(false);
-    const [videoPlaying, setVideoPlaying] = useState(false);
+    const [isAnimating, setIsAnimating] = useState(false);
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Hardcoded simple password check
         if (password === 'equilibrium' || password === 'admin') {
-            setShowAnimation(true);
+            setIsAnimating(true);
+            // Wait for animation to finish before actual login
+            setTimeout(() => {
+                onLogin(password === 'admin');
+            }, 2000); // 2 seconds for the full black hole effect
         } else {
             setError(true);
         }
     };
 
-    // Variants for letter scattering
-    // Each letter will get a random destination to create the "explosion" effect
-    const letterVariants = {
-        initial: { opacity: 1, x: 0, y: 0, rotate: 0, scale: 1, filter: "blur(0px)" },
-        exit: () => {
-            // Generate random scatter values with minimum distance to ensure "explosion" feeling on mobile
-            // On mobile, +/- 400px is enough to clear screen, but we ensure it's not near zero.
-
-            const minX = 200; // Minimum horizontal flight
-            const minY = 200; // Minimum vertical flight
-
-            const randomX = (Math.random() > 0.5 ? 1 : -1) * (minX + Math.random() * 600);
-            const randomY = (Math.random() > 0.5 ? 1 : -1) * (minY + Math.random() * 600);
-            const randomRotate = (Math.random() - 0.5) * 360; // Full spin potential
-            const randomScale = 0.5 + Math.random(); // Varied scale
-
-            return {
-                opacity: 0,
-                x: randomX,
-                y: randomY,
-                rotate: randomRotate,
-                scale: randomScale,
-                filter: "blur(4px)",
-                transition: {
-                    duration: 4.0, // Slow and dreamy
-                    ease: [0.2, 0.8, 0.2, 1]
-                }
-            };
+    // Black Hole Animation Variants
+    const logoVariants = {
+        initial: {
+            scale: 1,
+            rotate: 0,
+            opacity: 1,
+            filter: "blur(0px)"
+        },
+        singularity: {
+            scale: 0,
+            rotate: 720, // Two full spins
+            opacity: 0,
+            filter: "blur(4px)",
+            transition: {
+                duration: 1.5,
+                ease: "anticipate", // Pulls back slightly then shoots
+            }
         }
     };
 
-    // Variants for the form container
-    const formVariants = {
-        initial: { opacity: 1, y: 0, filter: "blur(0px)" },
+    const containerVariants = {
+        initial: { opacity: 1 },
         exit: {
             opacity: 0,
-            y: 150, // Move down further
-            filter: "blur(12px)",
-            transition: { duration: 3.0, ease: "easeInOut" } // Slow fade out to match
+            scale: 1.2, // Slight zoom in feeling into the hole
+            transition: { duration: 1.0, ease: "easeInOut" }
         }
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-background text-foreground p-4 overflow-hidden relative">
-            {/* Main Container - Responsive layout handling */}
-            <div className="w-full max-w-md relative z-10 flex flex-col items-center justify-center min-h-[500px]">
+        <div className="min-h-screen flex items-center justify-center bg-[#0a0a0a] text-foreground p-4 overflow-hidden relative">
 
-                {/* Logo / Video Section */}
-                <div className="relative w-full flex items-center justify-center mb-6 h-32 shrink-0">
-                    <AnimatePresence>
-                        {showAnimation && (
-                            <motion.div
-                                key="video-player"
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: videoPlaying ? 1 : 0 }}
-                                transition={{ duration: 1.0, ease: "easeOut" }}
-                                className="absolute inset-0 flex items-center justify-center z-10" // Video is Z-10
-                            >
-                                <div className="relative w-full max-w-[220px] aspect-video">
-                                    <video
-                                        autoPlay
-                                        muted
-                                        playsInline
-                                        preload="auto"
-                                        className="w-full h-full object-contain"
-                                        onLoadedMetadata={(e) => {
-                                            // Skip the first second as requested
-                                            e.target.currentTime = 1.0;
-                                        }}
-                                        onPlay={() => setVideoPlaying(true)}
-                                        onEnded={() => onLogin(password === 'admin')}
-                                    >
-                                        <source src="/logo_animation.mp4" type="video/mp4" />
-                                    </video>
-                                </div>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
+            {/* Background Ambience */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-white/5 rounded-full blur-[120px] opacity-20" />
+            </div>
 
-                    <AnimatePresence>
-                        {(!videoPlaying) && (
+            <div className="w-full max-w-md relative z-10 flex flex-col items-center justify-center min-h-[400px]">
+
+                {/* Logo Section */}
+                <div className="relative w-full flex items-center justify-center mb-12 h-32">
+                    <motion.div
+                        className="relative w-32 h-32 flex items-center justify-center z-20"
+                        variants={logoVariants}
+                        initial="initial"
+                        animate={isAnimating ? "singularity" : "initial"}
+                    >
+                        {/* The Singularity Glow (Only appears during animation) */}
+                        {isAnimating && (
                             <motion.div
-                                key="static-logo"
-                                initial={{ opacity: 1 }}
-                                exit={{ opacity: 0, transition: { duration: 0.8 } }}
-                                className="absolute inset-0 flex items-center justify-center z-20" // Logo is Z-20
-                            >
-                                <img src="/logo.svg" alt="Equilibrium Logo" className="h-full object-contain" />
-                            </motion.div>
+                                className="absolute inset-0 bg-white rounded-full blur-xl"
+                                initial={{ opacity: 0, scale: 0.5 }}
+                                animate={{ opacity: [0, 0.8, 1, 0], scale: [0.5, 1.5, 0] }}
+                                transition={{ duration: 1.5 }}
+                            />
                         )}
-                    </AnimatePresence>
+                        <img src="/logo.svg" alt="Equilibrium Logo" className="h-full w-full object-contain" />
+                    </motion.div>
                 </div>
 
-                {/* Text & Form Container - Absolute position overlay to allow particles to fly freely without pushing layout */}
-                <div className="relative w-full flex flex-col items-center z-30">
-                    <AnimatePresence mode="popLayout">
-                        {!showAnimation && (
-                            <motion.div
-                                className="flex flex-col items-center text-center w-full"
-                                initial={{ opacity: 1 }}
-                                exit={{ opacity: 0, transition: { duration: 3.5 } }}
-                            >
-                                <h1 className="text-4xl font-extrabold tracking-tight text-foreground mb-1 perspective-1000">
-                                    <SplitText
-                                        text="NICHE"
-                                        variants={letterVariants}
-                                    />
-                                </h1>
-                                <h2 className="text-lg font-medium text-muted-foreground uppercase tracking-wider perspective-1000">
-                                    <SplitText
-                                        text="Investor Portal"
-                                        variants={letterVariants}
-                                    />
-                                </h2>
-                                <motion.p
-                                    className="mt-4 text-sm text-muted-foreground"
-                                    variants={letterVariants}
-                                    initial="initial"
-                                    exit="exit"
-                                >
-                                    Please enter your access key to view the dashboard.
-                                </motion.p>
+                {/* Form Container */}
+                <AnimatePresence>
+                    {!isAnimating && (
+                        <motion.div
+                            className="w-full flex flex-col items-center text-center"
+                            variants={containerVariants}
+                            initial="initial"
+                            exit="exit"
+                        >
+                            <h1 className="text-3xl font-bold tracking-tight text-white mb-2">
+                                NICHE
+                            </h1>
+                            <p className="text-sm text-muted-foreground uppercase tracking-widest mb-8">
+                                Investor Portal
+                            </p>
 
-                                <motion.div
-                                    className="w-full pt-8 max-w-xs mx-auto"
-                                    variants={formVariants}
-                                    initial="initial"
-                                    exit="exit"
-                                >
-                                    <form className="space-y-6" onSubmit={handleSubmit}>
-                                        <div className="rounded-md shadow-sm -space-y-px">
-                                            <div>
-                                                <label htmlFor="password-input" className="sr-only">
-                                                    Password
-                                                </label>
-                                                <input
-                                                    id="password-input"
-                                                    name="password"
-                                                    type="password"
-                                                    required
-                                                    className={cn(
-                                                        "appearance-none rounded-md relative block w-full px-3 py-2 border border-input bg-background/50 placeholder-muted-foreground text-foreground focus:outline-none focus:ring-1 focus:ring-ring sm:text-sm",
-                                                        error && "border-destructive focus:ring-destructive"
-                                                    )}
-                                                    placeholder="Access Key"
-                                                    value={password}
-                                                    onChange={(e) => {
-                                                        setPassword(e.target.value);
-                                                        setError(false);
-                                                    }}
-                                                />
-                                            </div>
-                                        </div>
-
-                                        {error && (
-                                            <p className="text-sm text-destructive text-center">
-                                                Invalid access key. Please try again.
-                                            </p>
+                            <form className="w-full max-w-[280px] space-y-4" onSubmit={handleSubmit}>
+                                <div className="space-y-2">
+                                    <input
+                                        type="password"
+                                        required
+                                        className={cn(
+                                            "w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-center text-white placeholder:text-white/20 focus:outline-none focus:border-white/20 focus:bg-white/10 transition-all duration-300",
+                                            error && "border-rose-500/50 focus:border-rose-500"
                                         )}
+                                        placeholder="Access Key"
+                                        value={password}
+                                        onChange={(e) => {
+                                            setPassword(e.target.value);
+                                            setError(false);
+                                        }}
+                                    />
+                                    {error && (
+                                        <motion.p
+                                            initial={{ opacity: 0, y: -5 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            className="text-xs text-rose-500 font-medium"
+                                        >
+                                            Invalid key provided
+                                        </motion.p>
+                                    )}
+                                </div>
 
-                                        <div>
-                                            <button
-                                                type="submit"
-                                                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring transition-colors"
-                                            >
-                                                Enter Portal
-                                            </button>
-                                        </div>
-                                    </form>
-                                    <div className="text-center text-xs text-muted-foreground pt-4">
-                                        Issued & Managed by Equilibrium
-                                    </div>
-                                </motion.div>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-                </div>
+                                <button
+                                    type="submit"
+                                    className="w-full py-2.5 rounded-lg bg-white text-black font-medium text-sm hover:bg-white/90 transition-colors shadow-[0_0_20px_-5px_rgba(255,255,255,0.3)]"
+                                >
+                                    Enter
+                                </button>
+                            </form>
+
+                            <div className="mt-12 text-[10px] text-white/20 font-mono">
+                                SECURITY CLEARED // LEVEL 4
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
             </div>
         </div>
     );
