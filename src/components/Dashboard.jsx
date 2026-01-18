@@ -22,37 +22,28 @@ export default function Dashboard({ data, onLogout }) {
     return (
         <div className="min-h-screen bg-background text-foreground font-sans selection:bg-accent selection:text-white pb-20">
             {/* 1) Header */}
-            <header className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
+            <header className="border-b border-white/5 bg-black/20 backdrop-blur-xl sticky top-0 z-50">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex h-16 items-center justify-between">
                         <div className="flex items-center gap-4">
-                            <div className="flex flex-col">
-                                <div className="flex items-center gap-3">
-                                    <div className="h-8 w-8 flex items-center justify-center bg-white/5 rounded p-1 border border-border/40">
-                                        <img src="/logo.svg" alt="Equilibrium Logo" className="h-full w-full object-contain opacity-90" />
-                                    </div>
-                                    <div className="h-6 w-px bg-border/40" />
-                                    <div className="flex flex-col justify-center">
-                                        <span className="text-xl font-bold tracking-tight leading-none">NICHE</span>
-                                    </div>
-                                </div>
-                                <span className="text-[10px] uppercase tracking-wider text-muted-foreground pl-[3.25rem] -mt-1">
-                                    Issued & Managed by Equilibrium
-                                </span>
+                            {/* Logo */}
+                            <div className="flex items-center gap-3">
+                                <img src="/logo.svg" alt="Niche Logo" className="h-10 w-auto object-contain" />
                             </div>
                         </div>
+
                         <div className="flex items-center gap-6">
-                            <div className="hidden md:flex flex-col items-end text-xs text-muted-foreground">
-                                <span>Last NAV Update</span>
-                                <span className="font-medium text-foreground">{formatDate(data.lastUpdate)}</span>
+                            <div className="hidden md:flex flex-col items-end text-xs text-muted-foreground/60">
+                                <span>NAV Update</span>
+                                <span className="font-mono text-emerald-400">{formatDate(data.lastUpdate)}</span>
                             </div>
-                            <div className="h-6 w-px bg-border hidden md:block" />
+                            <div className="h-4 w-px bg-white/10 hidden md:block" />
                             <button
                                 onClick={onLogout}
-                                className="text-sm font-medium text-muted-foreground hover:text-destructive transition-colors flex items-center gap-2"
+                                className="text-xs font-medium text-muted-foreground hover:text-white transition-colors flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-white/5"
                             >
-                                <LogOut size={16} />
-                                <span className="hidden sm:inline">Logout</span>
+                                <LogOut size={14} />
+                                <span className="hidden sm:inline">Portal Logout</span>
                             </button>
                         </div>
                     </div>
@@ -143,30 +134,41 @@ export default function Dashboard({ data, onLogout }) {
 function MetricCard({ label, value, subValue, trend, highlight, secondary, icon }) {
     return (
         <div className={cn(
-            "p-5 rounded-lg border transition-colors",
-            highlight ? "bg-accent/5 border-accent/20" : "bg-card border-border",
-            secondary && "bg-transparent border-border/50"
+            "relative p-5 rounded-xl border transition-all duration-300 group overflow-hidden",
+            highlight
+                ? "bg-emerald-500/5 border-emerald-500/20 shadow-[0_0_20px_-10px_rgba(16,185,129,0.2)]"
+                : "bg-white/5 border-white/5 hover:border-white/10 hover:bg-white/10",
+            secondary && "bg-transparent border-dashed border-white/10"
         )}>
-            <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+            {highlight && <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent opacity-50" />}
+
+            <div className="relative flex items-center justify-between mb-3">
+                <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest flex items-center gap-1.5">
                     {icon}
                     {label}
                 </span>
                 {trend && (
-                    trend === 'up' ? <TrendingUp size={14} className="text-emerald-500" /> : <TrendingDown size={14} className="text-rose-500" />
+                    <div className={cn(
+                        "flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full",
+                        trend === 'up' ? "bg-emerald-500/10 text-emerald-400" : "bg-rose-500/10 text-rose-400"
+                    )}>
+                        {trend === 'up' ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
+                        <span>{trend === 'up' ? 'Pos' : 'Neg'}</span>
+                    </div>
                 )}
             </div>
-            <div className="flex items-baseline gap-1">
+
+            <div className="relative flex items-baseline gap-1.5">
                 <span className={cn(
-                    "text-2xl font-semibold tracking-tight",
-                    highlight ? "text-accent-foreground" : "text-foreground",
-                    trend === 'up' && "text-emerald-500",
-                    trend === 'down' && "text-rose-500",
-                    secondary && "text-lg text-foreground/80"
+                    "text-2xl md:text-3xl font-light tracking-tighter tabular-nums",
+                    highlight ? "text-white" : "text-white/90",
+                    trend === 'up' && !highlight && "text-emerald-400",
+                    trend === 'down' && !highlight && "text-rose-400",
+                    secondary && "text-xl text-muted-foreground"
                 )}>
                     {value}
                 </span>
-                {subValue && <span className="text-xs text-muted-foreground font-medium">{subValue}</span>}
+                {subValue && <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">{subValue}</span>}
             </div>
         </div>
     );

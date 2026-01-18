@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { TrendingUp } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
 const TIME_RANGES = ['1M', '3M', '6M', 'YTD', '1Y', 'ALL'];
@@ -53,18 +54,23 @@ export default function Performance({ data }) {
     return (
         <section className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <h2 className="text-xl font-medium tracking-tight">Performance</h2>
+                <div className="flex items-center gap-2">
+                    <div className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+                        <TrendingUp size={16} className="text-emerald-400" />
+                    </div>
+                    <h2 className="text-xl font-light tracking-tight text-white">Performance <span className="text-muted-foreground font-normal text-sm ml-2">NAV History</span></h2>
+                </div>
 
-                <div className="flex items-center gap-1 bg-card border border-border rounded-lg p-1 w-fit">
+                <div className="flex items-center p-1 bg-white/5 border border-white/10 rounded-lg">
                     {TIME_RANGES.map((range) => (
                         <button
                             key={range}
                             onClick={() => setActiveRange(range)}
                             className={cn(
-                                "px-3 py-1 text-xs font-medium rounded-md transition-colors",
+                                "px-3 py-1 text-[11px] font-medium rounded-md transition-all duration-200",
                                 activeRange === range
-                                    ? "bg-primary text-primary-foreground shadow-sm"
-                                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                                    ? "bg-emerald-500/20 text-emerald-400 shadow-[0_0_10px_-5px_rgba(16,185,129,0.3)] border border-emerald-500/30"
+                                    : "text-muted-foreground hover:text-white hover:bg-white/5 border border-transparent"
                             )}
                         >
                             {range}
@@ -73,19 +79,22 @@ export default function Performance({ data }) {
                 </div>
             </div>
 
-            <div className="bg-card border border-border rounded-lg p-6 h-[400px]">
+            <div className="relative bg-[#0a0a0a] border border-white/5 rounded-2xl p-6 h-[400px] shadow-2xl overflow-hidden group">
+                {/* Background glow */}
+                <div className="absolute top-0 right-0 w-[500px] h-[300px] bg-emerald-500/5 rounded-full blur-[100px] pointer-events-none" />
+
                 <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                    <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                         <defs>
                             <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor="hsl(var(--accent))" stopOpacity={0.4} />
-                                <stop offset="95%" stopColor="hsl(var(--accent))" stopOpacity={0.05} />
+                                <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+                                <stop offset="95%" stopColor="#06b6d4" stopOpacity={0} />
                             </linearGradient>
                         </defs>
-                        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} opacity={0.5} />
+                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
                         <XAxis
                             dataKey="date"
-                            tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
+                            tick={{ fontSize: 10, fill: '#737373', fontFamily: 'sans-serif' }}
                             tickLine={false}
                             axisLine={false}
                             minTickGap={40}
@@ -93,43 +102,47 @@ export default function Performance({ data }) {
                                 const date = new Date(value);
                                 return date.toLocaleDateString('default', { month: 'short', year: '2-digit' });
                             }}
+                            dy={10}
                         />
                         <YAxis
-                            tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
+                            tick={{ fontSize: 10, fill: '#737373', fontFamily: 'sans-serif' }}
                             tickLine={false}
                             axisLine={false}
                             domain={[minValue - padding, maxValue + padding]}
                             tickFormatter={(value) => value.toFixed(1)}
-                            width={40}
+                            dx={-10}
                         />
                         <Tooltip
                             contentStyle={{
-                                backgroundColor: 'hsl(var(--card))',
-                                borderColor: 'hsl(var(--border))',
-                                borderRadius: '0.5rem',
+                                backgroundColor: 'rgba(10,10,10,0.8)',
+                                borderColor: 'rgba(255,255,255,0.1)',
+                                backdropFilter: 'blur(8px)',
+                                borderRadius: '0.75rem',
                                 fontSize: '12px',
-                                boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                                boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+                                padding: '12px'
                             }}
-                            labelStyle={{ color: 'hsl(var(--muted-foreground))', marginBottom: '0.25rem' }}
-                            itemStyle={{ color: 'hsl(var(--foreground))', fontWeight: 500 }}
+                            labelStyle={{ color: '#a3a3a3', marginBottom: '4px', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.05em' }}
+                            itemStyle={{ color: '#fff', fontWeight: 600 }}
                             formatter={(value) => [`${value.toFixed(2)}`, 'NAV']}
-                            labelFormatter={(label) => new Date(label).toLocaleDateString('default', { month: 'short', day: 'numeric', year: 'numeric' })}
+                            labelFormatter={(label) => new Date(label).toLocaleDateString('default', { month: 'long', day: 'numeric', year: 'numeric' })}
+                            cursor={{ stroke: 'rgba(255,255,255,0.1)', strokeWidth: 1, strokeDasharray: '4 4' }}
                         />
                         <Area
                             type="monotone"
                             dataKey="value"
-                            stroke="hsl(var(--accent))"
-                            strokeWidth={2.5}
+                            stroke="#10b981"
+                            strokeWidth={2}
                             fillOpacity={1}
                             fill="url(#colorValue)"
-                            animationDuration={1000}
+                            animationDuration={1500}
                         />
                     </AreaChart>
                 </ResponsiveContainer>
             </div>
 
-            <div className="text-xs text-muted-foreground text-right border-t border-border/50 pt-2 opacity-70">
-                * The NAV calculation is performed by Equilibrium and is subject to slight variations until the official release.
+            <div className="text-[10px] text-muted-foreground/50 text-right font-mono uppercase tracking-widest">
+                * Data source: Equilibrium Quantitative Models
             </div>
         </section>
     );

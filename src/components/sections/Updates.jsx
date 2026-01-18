@@ -1,15 +1,21 @@
-import { Calendar, Megaphone, Target, ArrowRight, Activity } from 'lucide-react';
+import { Megaphone, Target, ArrowRight, Activity, Calendar } from 'lucide-react';
+import { cn } from '../../lib/utils';
 
-function UpdateCard({ title, icon, content }) {
+function UpdateCard({ title, icon, content, date }) {
     return (
-        <div className="space-y-2">
-            <div className="flex items-center gap-2 text-foreground font-medium text-sm">
-                {icon}
-                {title}
+        <div className="relative pl-6 pb-8 border-l border-white/10 last:pb-0 group">
+            <div className="absolute left-[-5px] top-0 w-2.5 h-2.5 rounded-full bg-[#0a0a0a] border border-blue-500 group-hover:bg-blue-500 transition-colors shadow-[0_0_8px_rgba(59,130,246,0.5)]" />
+
+            <div className="flex items-center gap-2 mb-2 group-hover:translate-x-1 transition-transform duration-300">
+                <span className="p-1 rounded bg-white/5 text-blue-400">{icon}</span>
+                <span className="text-sm font-medium text-white">{title}</span>
+                {date && <span className="text-[10px] text-muted-foreground font-mono ml-auto">{date}</span>}
             </div>
-            <p className="text-sm text-muted-foreground leading-relaxed pl-6 border-l border-border ml-2">
-                {content}
-            </p>
+            <div className="bg-white/5 border border-white/5 rounded-lg p-4 group-hover:border-white/10 transition-colors">
+                <p className="text-sm text-gray-400 leading-relaxed font-light">
+                    {content}
+                </p>
+            </div>
         </div>
     );
 }
@@ -21,39 +27,56 @@ export default function Updates({ data }) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Investment Update Column */}
             <div className="md:col-span-2 space-y-6">
-                <h2 className="text-xl font-medium tracking-tight">Investment Update</h2>
-                <div className="bg-card border border-border rounded-lg p-6 space-y-8">
-                    <UpdateCard
-                        title="Market Context"
-                        icon={<Megaphone size={16} className="text-muted-foreground" />}
-                        content={updates.marketContext}
-                    />
-                    <UpdateCard
-                        title="Portfolio Actions"
-                        icon={<Activity size={16} className="text-muted-foreground" />}
-                        content={updates.portfolioActions}
-                    />
-                    <UpdateCard
-                        title="Focus Going Forward"
-                        icon={<Target size={16} className="text-muted-foreground" />}
-                        content={updates.focus}
-                    />
+                <div className="flex items-center gap-2">
+                    <div className="p-2 rounded-lg bg-blue-500/10 border border-blue-500/20">
+                        <Megaphone size={16} className="text-blue-400" />
+                    </div>
+                    <h2 className="text-xl font-light tracking-tight text-white">Investment <span className="text-muted-foreground font-normal text-sm ml-2">Updates</span></h2>
+                </div>
+
+                <div className="bg-[#0a0a0a] border border-white/5 rounded-2xl p-8 shadow-xl">
+                    <div className="space-y-2">
+                        <UpdateCard
+                            title="Market Context"
+                            icon={<Activity size={14} />}
+                            content={updates.marketContext}
+                        />
+                        <UpdateCard
+                            title="Portfolio Actions"
+                            icon={<Target size={14} />}
+                            content={updates.portfolioActions}
+                        />
+                        <UpdateCard
+                            title="Focus Going Forward"
+                            icon={<ArrowRight size={14} />}
+                            content={updates.focus}
+                        />
+                    </div>
                 </div>
             </div>
 
             {/* Timeline Column */}
             <div className="space-y-6">
-                <h2 className="text-xl font-medium tracking-tight">Investor Timeline</h2>
-                <div className="bg-card border border-border rounded-lg p-6">
-                    <div className="relative space-y-6 before:absolute before:inset-0 before:ml-2.5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-border before:to-transparent">
+                <div className="flex items-center gap-2">
+                    <div className="p-2 rounded-lg bg-purple-500/10 border border-purple-500/20">
+                        <Calendar size={16} className="text-purple-400" />
+                    </div>
+                    <h2 className="text-xl font-light tracking-tight text-white">Timeline</h2>
+                </div>
+
+                <div className="bg-[#0a0a0a] border border-white/5 rounded-2xl p-6 shadow-xl h-fit">
+                    <div className="space-y-6">
                         {timeline.map((item, index) => (
-                            <div key={index} className="relative flex items-start group">
-                                <div className="absolute left-0 h-5 w-5 rounded-full border-2 border-background bg-muted-foreground group-hover:bg-primary transition-colors ring-4 ring-background" />
-                                <div className="pl-8">
-                                    <span className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-0.5">
+                            <div key={index} className="relative flex gap-4 group">
+                                <div className="flex-none flex flex-col items-center">
+                                    <div className="w-2 h-2 rounded-full bg-purple-500 ring-4 ring-purple-500/10 mt-1.5" />
+                                    {index !== timeline.length - 1 && <div className="w-px h-full bg-white/5 my-1" />}
+                                </div>
+                                <div className="pb-6 last:pb-0">
+                                    <span className="block text-[10px] font-mono text-purple-400 mb-1">
                                         {new Date(item.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                                     </span>
-                                    <span className="text-sm font-medium text-foreground">{item.event}</span>
+                                    <span className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors">{item.event}</span>
                                 </div>
                             </div>
                         ))}
