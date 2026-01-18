@@ -8,6 +8,7 @@ import Portfolio from './sections/Portfolio';
 import Risk from './sections/Risk';
 import Updates from './sections/Updates';
 import Documents from './sections/Documents';
+import Hero from './sections/Hero';
 
 export default function Dashboard({ data, onLogout }) {
     const formatDate = (dateString) => {
@@ -60,16 +61,10 @@ export default function Dashboard({ data, onLogout }) {
 
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
 
-                {/* 2) Snapshot (Hero Section) */}
+                {/* 2) Hero Section */}
+                <Hero />
+
                 <section className="space-y-6">
-                    <div className="space-y-2">
-                        <h1 className="text-3xl font-light tracking-tight text-foreground">
-                            NICHE – Alternative Market Certificate
-                        </h1>
-                        <p className="text-base text-muted-foreground max-w-2xl text-balance">
-                            Systematic and discretionary quantitative strategies across liquid global markets.
-                        </p>
-                    </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <MetricCard
