@@ -4,6 +4,7 @@ import { cn } from '../lib/utils';
 // Future imports for other sections
 // import PerformanceSection from './sections/PerformanceSection';
 import Performance from './sections/Performance';
+import Liquidity from './sections/Liquidity';
 import Portfolio from './sections/Portfolio';
 import Risk from './sections/Risk';
 import Updates from './sections/Updates';
@@ -104,7 +105,12 @@ export default function Dashboard({ data, onLogout }) {
                 <hr className="border-border" />
 
                 {/* 3) Performance */}
-                <Performance data={data.performance} liquidityData={data.liquidityHistory} />
+                <Performance data={data.performance} />
+
+                <hr className="border-border" />
+
+                {/* 3.1) Liquidity */}
+                <Liquidity data={data.liquidityHistory} />
 
                 <hr className="border-border" />
 

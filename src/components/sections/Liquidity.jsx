@@ -5,7 +5,7 @@ import { cn } from '../../lib/utils';
 
 const TIME_RANGES = ['1M', '3M', '6M', 'YTD', '1Y', 'ALL'];
 
-export default function Performance({ data }) {
+export default function Liquidity({ data }) {
     const [activeRange, setActiveRange] = useState('ALL');
 
     // Filter data based on activeRange using real dates
@@ -42,8 +42,7 @@ export default function Performance({ data }) {
 
     const chartData = getFilteredData();
 
-    // Calculate min/max for Y-axis domain to focus the chart
-    // Safety check for empty data
+    // Calculate min/max for Y-axis domain
     const hasData = chartData.length > 0;
     const values = chartData.map(d => d.value);
     const minValue = hasData ? Math.min(...values) : 0;
@@ -55,10 +54,10 @@ export default function Performance({ data }) {
         <section className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-2">
-                    <div className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
-                        <TrendingUp size={16} className="text-emerald-400" />
+                    <div className="p-2 rounded-lg bg-blue-500/10 border border-blue-500/20">
+                        <TrendingUp size={16} className="text-blue-400" />
                     </div>
-                    <h2 className="text-xl font-light tracking-tight text-white">Performance <span className="text-muted-foreground font-normal text-sm ml-2">NAV History</span></h2>
+                    <h2 className="text-xl font-light tracking-tight text-white">Liquidity <span className="text-muted-foreground font-normal text-sm ml-2">Exposure %</span></h2>
                 </div>
 
                 <div className="flex items-center p-1 bg-white/5 border border-white/10 rounded-lg">
@@ -69,7 +68,7 @@ export default function Performance({ data }) {
                             className={cn(
                                 "px-3 py-1 text-[11px] font-medium rounded-md transition-all duration-200",
                                 activeRange === range
-                                    ? "bg-emerald-500/20 text-emerald-400 shadow-[0_0_10px_-5px_rgba(16,185,129,0.3)] border border-emerald-500/30"
+                                    ? "bg-blue-500/20 text-blue-400 shadow-[0_0_10px_-5px_rgba(59,130,246,0.3)] border border-blue-500/30"
                                     : "text-muted-foreground hover:text-white hover:bg-white/5 border border-transparent"
                             )}
                         >
@@ -81,14 +80,14 @@ export default function Performance({ data }) {
 
             <div className="relative bg-[#0a0a0a] border border-white/5 rounded-2xl p-6 h-[400px] shadow-2xl overflow-hidden group">
                 {/* Background glow */}
-                <div className="absolute top-0 right-0 w-[500px] h-[300px] bg-emerald-500/5 rounded-full blur-[100px] pointer-events-none" />
+                <div className="absolute top-0 right-0 w-[500px] h-[300px] bg-blue-500/5 rounded-full blur-[100px] pointer-events-none" />
 
                 <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                         <defs>
-                            <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
-                                <stop offset="95%" stopColor="#06b6d4" stopOpacity={0} />
+                            <linearGradient id="colorLiquidity" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+                                <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
                             </linearGradient>
                         </defs>
                         <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
@@ -109,7 +108,7 @@ export default function Performance({ data }) {
                             tickLine={false}
                             axisLine={false}
                             domain={yDomain}
-                            tickFormatter={(value) => value.toFixed(1)}
+                            tickFormatter={(value) => `${value.toFixed(1)}%`}
                             dx={-10}
                         />
                         <Tooltip
@@ -124,25 +123,21 @@ export default function Performance({ data }) {
                             }}
                             labelStyle={{ color: '#a3a3a3', marginBottom: '4px', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.05em' }}
                             itemStyle={{ color: '#fff', fontWeight: 600 }}
-                            formatter={(value) => [`${value.toFixed(2)}`, 'NAV']}
+                            formatter={(value) => [`${value.toFixed(2)}%`, 'Liquidity']}
                             labelFormatter={(label) => new Date(label).toLocaleDateString('default', { month: 'long', day: 'numeric', year: 'numeric' })}
                             cursor={{ stroke: 'rgba(255,255,255,0.1)', strokeWidth: 1, strokeDasharray: '4 4' }}
                         />
                         <Area
                             type="monotone"
                             dataKey="value"
-                            stroke="#10b981"
+                            stroke="#3b82f6"
                             strokeWidth={2}
                             fillOpacity={1}
-                            fill="url(#colorValue)"
+                            fill="url(#colorLiquidity)"
                             animationDuration={1500}
                         />
                     </AreaChart>
                 </ResponsiveContainer>
-            </div>
-
-            <div className="text-[10px] text-muted-foreground/50 text-right font-mono uppercase tracking-widest">
-                * Data source: Equilibrium Quantitative Models
             </div>
         </section>
     );
