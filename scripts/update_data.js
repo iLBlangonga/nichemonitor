@@ -113,18 +113,18 @@ async function processData() {
         const balanceData = await readCSV('balance.csv');
         if (balanceData && navData && navData.length > 0) {
             const liquidityHistory = [];
-            // Create a map of NAV by date for quick lookup
-            const navMap = new Map();
+            // Create a map of AUM by date for quick lookup
+            const aumMap = new Map();
             navData.forEach(row => {
                 const dateKey = row.date.split(' ')[0];
-                navMap.set(dateKey, row.estimated_nav);
+                aumMap.set(dateKey, row.estimated_aum); // USE AUM, NOT NAV (which is share price)
             });
 
             balanceData.forEach(row => {
                 const dateKey = row.timestamp.split(' ')[0];
-                const nav = navMap.get(dateKey);
+                const aum = aumMap.get(dateKey);
 
-                if (nav && nav > 0) {
+                if (aum && aum > 0) {
                     // Assuming EUR and USD are the columns. 
                     // WARNING: Simply summing them implies 1:1 parity which is wrong, but we lack FX history.
                     // Ideally we'd have an FX rate. 
@@ -134,11 +134,12 @@ async function processData() {
                     // A better approach if values are disparate is to just use EUR if USD is small, or vice versa.
                     // Let's use Sum.
                     const cash = (row.EUR || 0) + (row.USD || 0); // row.USD might be negative?
-                    const liquidityPct = (cash / nav) * 100;
+                    const liquidityPct = (cash / aum) * 100;
 
                     liquidityHistory.push({
                         date: dateKey,
-                        value: parseFloat(liquidityPct.toFixed(2))
+                        // Cap at 100% just in case of data timing mismatches, though unlikely with correct fields
+                        value: Math.min(100, parseFloat(liquidityPct.toFixed(2)))
                     });
                 }
             });
