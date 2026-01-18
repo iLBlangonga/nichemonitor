@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LogOut, Save, RotateCcw, FileJson, LayoutDashboard, Edit3, Upload, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { LogOut, Save, RotateCcw, FileJson, LayoutDashboard, Edit3, Upload, AlertCircle, CheckCircle2, Download, Loader2 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import JSZip from 'jszip';
 import Papa from 'papaparse';
@@ -16,6 +16,7 @@ export default function Admin({ data, setData, onLogout }) {
     const [jsonError, setJsonError] = useState(null);
     const [tempJson, setTempJson] = useState(JSON.stringify(data, null, 2));
     const [uploadStatus, setUploadStatus] = useState(null);
+    const [isSaving, setIsSaving] = useState(false);
 
     // Handler for form field updates
     const updateField = (path, value) => {
@@ -43,7 +44,7 @@ export default function Admin({ data, setData, onLogout }) {
         }
     };
 
-    const handleSave = () => {
+    const handleDownload = () => {
         const jsonString = JSON.stringify(data, null, 2);
         const blob = new Blob([jsonString], { type: "application/json" });
         const url = URL.createObjectURL(blob);
@@ -53,6 +54,28 @@ export default function Admin({ data, setData, onLogout }) {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+    };
+
+    const handleSave = async () => {
+        setIsSaving(true);
+        try {
+            const response = await fetch('/save-data', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                setUploadStatus({ type: 'success', message: 'Data saved successfully! The app will reload with new data.' });
+            } else {
+                throw new Error('Server returned error');
+            }
+        } catch (err) {
+            console.error(err);
+            setUploadStatus({ type: 'error', message: 'Failed to save. Make sure you are running in dev mode.' });
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     const processZipFile = async (file) => {
@@ -134,7 +157,8 @@ export default function Admin({ data, setData, onLogout }) {
 
             setData(newData);
             setTempJson(JSON.stringify(newData, null, 2));
-            setUploadStatus({ type: 'success', message: 'Data updated successfully! Don\'t forget to click "Download Config" to save.' });
+            setTempJson(JSON.stringify(newData, null, 2));
+            setUploadStatus({ type: 'success', message: 'Data processed! Click "Save Changes" to persist.' });
 
         } catch (err) {
             console.error(err);
@@ -151,11 +175,24 @@ export default function Admin({ data, setData, onLogout }) {
                         <span className="text-xs text-muted-foreground px-2 py-0.5 bg-muted rounded-full">v1.1</span>
                     </div>
                     <div className="flex items-center gap-4">
-                        <button onClick={handleSave} className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-md font-medium text-sm hover:bg-primary/90 transition-colors">
-                            <Save size={16} />
-                            Download Config
+                        <button
+                            onClick={handleDownload}
+                            className="flex items-center gap-2 text-muted-foreground hover:text-foreground px-3 py-2 rounded-md font-medium text-sm transition-colors"
+                            title="Download local backup"
+                        >
+                            <Download size={16} />
+                            Backup
                         </button>
-                        <button onClick={onLogout} className="flex items-center gap-2 text-muted-foreground hover:text-destructive transition-colors">
+                        <button
+                            onClick={handleSave}
+                            disabled={isSaving}
+                            className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-md font-medium text-sm hover:bg-primary/90 transition-colors disabled:opacity-50"
+                        >
+                            {isSaving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+                            {isSaving ? 'Saving...' : 'Save Changes'}
+                        </button>
+                        <div className="h-6 w-px bg-border mx-2" />
+                        <button onClick={onLogout} className="flex items-center gap-2 text-muted-foreground hover:text-destructive transition-colors" title="Logout">
                             <LogOut size={16} />
                         </button>
                     </div>
