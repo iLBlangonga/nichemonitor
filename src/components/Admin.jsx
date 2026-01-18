@@ -44,7 +44,9 @@ export default function Admin({ data, setData, onLogout }) {
         }
     };
 
-    const handleDownload = () => {
+    const isDev = import.meta.env.DEV;
+
+    const triggerDownload = () => {
         const jsonString = JSON.stringify(data, null, 2);
         const blob = new Blob([jsonString], { type: "application/json" });
         const url = URL.createObjectURL(blob);
@@ -57,6 +59,15 @@ export default function Admin({ data, setData, onLogout }) {
     };
 
     const handleSave = async () => {
+        if (!isDev) {
+            triggerDownload();
+            setUploadStatus({
+                type: 'success',
+                message: 'Downloaded updated data.json! To go live: replace local file, commit & push to GitHub.'
+            });
+            return;
+        }
+
         setIsSaving(true);
         try {
             const response = await fetch('/save-data', {
@@ -66,7 +77,8 @@ export default function Admin({ data, setData, onLogout }) {
             });
 
             if (response.ok) {
-                setUploadStatus({ type: 'success', message: 'Data saved successfully! The app will reload with new data.' });
+                setUploadStatus({ type: 'success', message: 'Data saved locally! App reloading...' });
+                setTimeout(() => window.location.reload(), 1000);
             } else {
                 throw new Error('Server returned error');
             }
@@ -176,7 +188,7 @@ export default function Admin({ data, setData, onLogout }) {
                     </div>
                     <div className="flex items-center gap-4">
                         <button
-                            onClick={handleDownload}
+                            onClick={triggerDownload}
                             className="flex items-center gap-2 text-muted-foreground hover:text-foreground px-3 py-2 rounded-md font-medium text-sm transition-colors"
                             title="Download local backup"
                         >
