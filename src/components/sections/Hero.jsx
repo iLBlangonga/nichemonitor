@@ -1,8 +1,21 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
 import { ArrowRight, BarChart2, Shield, Activity } from 'lucide-react';
 
 export default function Hero() {
+    const x = useMotionValue(0);
+    const y = useMotionValue(0);
+
+    // Smooth spring animation for the spotlight
+    const mouseX = useSpring(x, { stiffness: 500, damping: 50 });
+    const mouseY = useSpring(y, { stiffness: 500, damping: 50 });
+
+    function handleMouseMove({ currentTarget, clientX, clientY }) {
+        const { left, top } = currentTarget.getBoundingClientRect();
+        x.set(clientX - left);
+        y.set(clientY - top);
+    }
+
     return (
         <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0a0a0a] to-[#1a1a1a] shadow-2xl border border-white/10 p-8 md:p-12 mb-8">
             {/* Background elements for "tech/quant" feel */}
@@ -38,17 +51,17 @@ export default function Hero() {
                         transition={{ duration: 0.6, delay: 0.2 }}
                         className="grid grid-cols-1 sm:grid-cols-3 gap-6"
                     >
-                        <div className="flex flex-col gap-2 p-4 rounded-xl bg-white/5 border border-white/5 backdrop-blur-sm">
+                        <div className="flex flex-col gap-2 p-4 rounded-xl bg-white/5 border border-white/5 backdrop-blur-sm hover:bg-white/10 transition-colors">
                             <Activity className="text-emerald-400 mb-1" size={20} />
                             <span className="text-sm font-medium text-gray-300">Absolute Return</span>
                             <span className="text-xs text-gray-500">Uncorrelated Alpha</span>
                         </div>
-                        <div className="flex flex-col gap-2 p-4 rounded-xl bg-white/5 border border-white/5 backdrop-blur-sm">
+                        <div className="flex flex-col gap-2 p-4 rounded-xl bg-white/5 border border-white/5 backdrop-blur-sm hover:bg-white/10 transition-colors">
                             <Shield className="text-cyan-400 mb-1" size={20} />
                             <span className="text-sm font-medium text-gray-300">Long Volatility</span>
                             <span className="text-xs text-gray-500">Tail Risk Hedge</span>
                         </div>
-                        <div className="flex flex-col gap-2 p-4 rounded-xl bg-white/5 border border-white/5 backdrop-blur-sm">
+                        <div className="flex flex-col gap-2 p-4 rounded-xl bg-white/5 border border-white/5 backdrop-blur-sm hover:bg-white/10 transition-colors">
                             <BarChart2 className="text-purple-400 mb-1" size={20} />
                             <span className="text-sm font-medium text-gray-300">Systematic</span>
                             <span className="text-xs text-gray-500">Quant Governance</span>
@@ -56,28 +69,43 @@ export default function Hero() {
                     </motion.div>
                 </div>
 
-                {/* Right Column: Visual/Logo */}
+                {/* Right Column: Visual/Logo - Interactive Box */}
                 <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.8, delay: 0.3 }}
-                    className="flex flex-col justify-center items-center text-center"
+                    className="relative group rounded-3xl border border-white/10 bg-black/40 backdrop-blur-xl overflow-hidden"
+                    onMouseMove={handleMouseMove}
                 >
-                    <div className="relative w-48 h-48 md:w-64 md:h-64 flex items-center justify-center">
+                    {/* Interactive Spotlight Effect */}
+                    <motion.div
+                        className="pointer-events-none absolute -inset-px rounded-3xl opacity-0 transition duration-300 group-hover:opacity-100"
+                        style={{
+                            background: useTransform(
+                                [mouseX, mouseY],
+                                ([x, y]) => `radial-gradient(600px circle at ${x}px ${y}px, rgba(16, 185, 129, 0.1), transparent 40%)`
+                            ),
+                        }}
+                    />
+
+                    <div className="relative w-full h-[400px] flex items-center justify-center p-8">
                         {/* Glowing ring behind logo */}
-                        <div className="absolute inset-0 rounded-full border border-emerald-500/20 shadow-[0_0_100px_-20px_rgba(16,185,129,0.2)] animate-spin-slow" style={{ animationDuration: '20s' }} />
-                        <div className="absolute inset-4 rounded-full border border-cyan-500/20 shadow-[0_0_100px_-20px_rgba(6,182,212,0.2)] animate-reverse-spin" style={{ animationDuration: '25s' }} />
+                        <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="w-[300px] h-[300px] border border-emerald-500/20 rounded-full shadow-[0_0_100px_-20px_rgba(16,185,129,0.1)] animate-spin-slow opacity-30" style={{ animationDuration: '30s' }} />
+                            <div className="absolute w-[220px] h-[220px] border border-cyan-500/20 rounded-full shadow-[0_0_100px_-20px_rgba(6,182,212,0.1)] animate-reverse-spin opacity-40" style={{ animationDuration: '25s' }} />
+                            <div className="absolute w-[140px] h-[140px] border border-purple-500/20 rounded-full opacity-20" />
+                        </div>
 
                         <img
                             src="/logo.svg"
                             alt="Equilibrium Logo"
-                            className="w-32 h-32 md:w-40 md:h-40 object-contain relative z-10 drop-shadow-2xl"
+                            className="w-40 h-40 md:w-56 md:h-56 object-contain relative z-10 drop-shadow-[0_0_30px_rgba(16,185,129,0.3)] transition-all duration-500 group-hover:scale-105 group-hover:drop-shadow-[0_0_50px_rgba(16,185,129,0.5)]"
                         />
                     </div>
 
-                    <div className="mt-8 space-y-1">
-                        <p className="text-sm text-gray-500 tracking-widest uppercase">Developed by</p>
-                        <p className="text-base font-semibold text-white tracking-wide">Equilibrium Research Team</p>
+                    <div className="absolute bottom-6 left-0 right-0 text-center space-y-1 pointer-events-none">
+                        <p className="text-xs text-gray-500 tracking-[0.2em] uppercase font-light">Developed by</p>
+                        <p className="text-sm font-medium text-white/80 tracking-widest">Equilibrium Research Team</p>
                     </div>
                 </motion.div>
             </div>

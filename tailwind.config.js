@@ -28,6 +28,9 @@ export default {
                 ring: "hsl(var(--ring))",
                 radius: "hsl(var(--radius))",
             },
+            fontFamily: {
+                orbitron: ['Orbitron', 'sans-serif'],
+            },
         },
     },
     plugins: [],
