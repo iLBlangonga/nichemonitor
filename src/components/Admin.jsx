@@ -295,10 +295,21 @@ export default function Admin({ data, setData, onLogout }) {
                             <div className="space-y-8 animate-in fade-in duration-300">
                                 <section className="space-y-4">
                                     <h3 className="text-lg font-medium border-b border-border pb-2">Investment Commentary</h3>
-                                    <div className="space-y-4">
-                                        <TextAreaField label="Market Context" value={data.updates.marketContext} onChange={(v) => updateField('updates.marketContext', v)} />
-                                        <TextAreaField label="Portfolio Actions" value={data.updates.portfolioActions} onChange={(v) => updateField('updates.portfolioActions', v)} />
-                                        <TextAreaField label="Focus Going Forward" value={data.updates.focus} onChange={(v) => updateField('updates.focus', v)} />
+
+                                    <div className="grid md:grid-cols-2 gap-6">
+                                        <div className="space-y-4">
+                                            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">English</h4>
+                                            <TextAreaField label="Market Context (EN)" value={data.updates.en?.marketContext || ''} onChange={(v) => updateField('updates.en.marketContext', v)} />
+                                            <TextAreaField label="Portfolio Actions (EN)" value={data.updates.en?.portfolioActions || ''} onChange={(v) => updateField('updates.en.portfolioActions', v)} />
+                                            <TextAreaField label="Focus Going Forward (EN)" value={data.updates.en?.focus || ''} onChange={(v) => updateField('updates.en.focus', v)} />
+                                        </div>
+
+                                        <div className="space-y-4">
+                                            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">Italian</h4>
+                                            <TextAreaField label="Contesto di Mercato (IT)" value={data.updates.it?.marketContext || ''} onChange={(v) => updateField('updates.it.marketContext', v)} />
+                                            <TextAreaField label="Azioni di Portafoglio (IT)" value={data.updates.it?.portfolioActions || ''} onChange={(v) => updateField('updates.it.portfolioActions', v)} />
+                                            <TextAreaField label="Focus Futuro (IT)" value={data.updates.it?.focus || ''} onChange={(v) => updateField('updates.it.focus', v)} />
+                                        </div>
                                     </div>
                                 </section>
 

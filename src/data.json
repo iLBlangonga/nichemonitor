@@ -191,9 +191,16 @@
     "limits": "Systematic enforcement of position sizing and stress scenarios"
   },
   "updates": {
-    "marketContext": "Global markets have shown resilience despite rising rate expectations. Volatility remains compressed.",
-    "portfolioActions": "Reduced gross exposure in Equity Quant. Increased hedges in anticipation of macro events.",
-    "focus": "Monitoring inflation data prints and central bank liquidity flows."
+    "en": {
+      "marketContext": "Global markets have shown resilience despite rising rate expectations. Volatility remains compressed.",
+      "portfolioActions": "Reduced gross exposure in Equity Quant. Increased hedges in anticipation of macro events.",
+      "focus": "Monitoring inflation data prints and central bank liquidity flows."
+    },
+    "it": {
+      "marketContext": "I mercati globali hanno mostrato resilienza nonostante le aspettative di rialzo dei tassi. La volatilità rimane compressa.",
+      "portfolioActions": "Ridotta esposizione lorda nel comparto Equity Quant. Aumentate le coperture in previsione di eventi macroeconomici.",
+      "focus": "Monitoraggio dei dati sull'inflazione e dei flussi di liquidità delle banche centrali."
+    }
   },
   "timeline": [
     {

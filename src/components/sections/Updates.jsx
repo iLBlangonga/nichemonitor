@@ -22,10 +22,14 @@ function UpdateCard({ title, icon, content, date }) {
     );
 }
 
+
 export default function Updates({ data }) {
     const { language } = useLanguage();
     const t = translations[language];
     const { updates, timeline } = data;
+
+    // Select the correct language for updates, default to 'en' if missing
+    const content = updates[language] || updates['en'] || {};
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -43,17 +47,17 @@ export default function Updates({ data }) {
                         <UpdateCard
                             title={t.updates.marketContext}
                             icon={<Activity size={14} />}
-                            content={updates.marketContext}
+                            content={content.marketContext}
                         />
                         <UpdateCard
                             title={t.updates.portfolioActions}
                             icon={<Target size={14} />}
-                            content={updates.portfolioActions}
+                            content={content.portfolioActions}
                         />
                         <UpdateCard
                             title={t.updates.focus}
                             icon={<ArrowRight size={14} />}
-                            content={updates.focus}
+                            content={content.focus}
                         />
                     </div>
                 </div>
