@@ -14,19 +14,21 @@ export default async function handler(request, response) {
     }
 
     try {
-        // Construct URL object to parse query params
-        // In Node.js serverless functions, request.url is just the path (e.g. '/api/upload-pdf?filename=...')
-        // We need a base to constructor URL, though for searchParams it doesn't matter much.
         const url = new URL(request.url, `http://${request.headers.host}`);
         const filename = url.searchParams.get('filename') || 'newsletter.pdf';
 
-        // Upload to Vercel Blob
-        // We pass the 'request' object directly, which is a Readable stream in Node.js
-        // put() handles reading the stream.
-        const blob = await put(filename, request, {
+        // Manually buffer the request body
+        const chunks = [];
+        for await (const chunk of request) {
+            chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk);
+        }
+        const fileBuffer = Buffer.concat(chunks);
+
+        // Upload the buffer
+        const blob = await put(filename, fileBuffer, {
             access: 'public',
-            addRandomSuffix: false, // Overwrite or keep predictable name
-            contentType: 'application/pdf', // Assuming PDF as per feature name
+            addRandomSuffix: false,
+            contentType: 'application/pdf',
         });
 
         return response.status(200).json(blob);
