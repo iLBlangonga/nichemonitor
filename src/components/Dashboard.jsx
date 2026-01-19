@@ -1,5 +1,5 @@
 import React from 'react';
-import { LogOut, FileText, ArrowDownToLine, TrendingUp, TrendingDown, Activity, AlertCircle } from 'lucide-react';
+import { LogOut, FileText, ArrowDownToLine, TrendingUp, TrendingDown, AlertCircle } from 'lucide-react';
 import { cn } from '../lib/utils';
 // Future imports for other sections
 // import PerformanceSection from './sections/PerformanceSection';
@@ -88,20 +88,7 @@ export default function Dashboard({ data, onLogout }) {
                             trend={data.nav.inception >= 0 ? 'up' : 'down'}
                         />
                     </div>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
-                        <MetricCard
-                            label="Ann. Volatility"
-                            value={`${data.metrics.volatility}%`}
-                            icon={<Activity size={14} />}
-                            secondary
-                        />
-                        <MetricCard
-                            label="Max Drawdown"
-                            value={`${data.metrics.maxDrawdown}%`}
-                            icon={<TrendingDown size={14} />}
-                            secondary
-                        />
-                    </div>
+
 
                     <div className="text-xs text-muted-foreground">
                         * All performance figures shown net of fees.
