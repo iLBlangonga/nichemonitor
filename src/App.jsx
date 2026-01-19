@@ -58,6 +58,23 @@ function App() {
             setIsAuthenticated(true);
             if (admin === 'true') setIsAdmin(true);
         }
+
+        // Fetch latest data from Blob Storage (Vercel)
+        // This will fail locally (404) unless using 'vercel dev', which is fine as we fallback to local JSON.
+        const fetchData = async () => {
+            try {
+                const res = await fetch('/api/get-data');
+                if (res.ok) {
+                    const latestData = await res.json();
+                    setData(latestData);
+                    console.log('Hydrated with latest data from Vercel Blob');
+                }
+            } catch (err) {
+                console.warn('Using local data (could not fetch remote):', err);
+            }
+        };
+
+        fetchData();
     }, []);
 
     const handleLogin = (isAdminAccess) => {

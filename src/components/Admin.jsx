@@ -59,32 +59,28 @@ export default function Admin({ data, setData, onLogout }) {
     };
 
     const handleSave = async () => {
-        if (!isDev) {
-            triggerDownload();
-            setUploadStatus({
-                type: 'success',
-                message: 'Downloaded updated data.json! To go live: replace local file, commit & push to GitHub.'
-            });
-            return;
-        }
-
         setIsSaving(true);
+        // Determine endpoint: Local -> Vite middleware, Prod -> Vercel Function
+        const endpoint = isDev ? '/save-data' : '/api/save-data';
+
         try {
-            const response = await fetch('/save-data', {
+            const response = await fetch(endpoint, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
             });
 
             if (response.ok) {
-                setUploadStatus({ type: 'success', message: 'Data saved locally! App reloading...' });
-                setTimeout(() => window.location.reload(), 1000);
+                // If Dev, reload to see changes. If Prod, reload to fetch new blob data
+                setUploadStatus({ type: 'success', message: 'Data saved successfully! App reloading...' });
+                setTimeout(() => window.location.reload(), 1500);
             } else {
-                throw new Error('Server returned error');
+                const errJson = await response.json().catch(() => ({}));
+                throw new Error(errJson.error || 'Server error');
             }
         } catch (err) {
             console.error(err);
-            setUploadStatus({ type: 'error', message: 'Failed to save. Make sure you are running in dev mode.' });
+            setUploadStatus({ type: 'error', message: `Save failed: ${err.message}` });
         } finally {
             setIsSaving(false);
         }
