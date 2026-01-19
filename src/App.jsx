@@ -66,6 +66,13 @@ function App() {
                 const res = await fetch('/api/get-data');
                 if (res.ok) {
                     const latestData = await res.json();
+
+                    // Patch: Ensure Niche Presentation URL is up to date (Blob might be stale)
+                    const nicheDoc = latestData.documents?.find(d => d.name === 'What is Niche');
+                    if (nicheDoc && (nicheDoc.url === '#' || !nicheDoc.url)) {
+                        nicheDoc.url = '/niche_presentation.pdf';
+                    }
+
                     setData(latestData);
                     console.log('Hydrated with latest data from Vercel Blob');
                 }
