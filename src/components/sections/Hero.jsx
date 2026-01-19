@@ -17,10 +17,24 @@ export default function Hero() {
     }
 
     return (
-        <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0a0a0a] to-[#1a1a1a] shadow-2xl border border-white/10 p-8 md:p-12 mb-8">
+        <section
+            className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0a0a0a] to-[#1a1a1a] shadow-2xl border border-white/10 p-8 md:p-12 mb-8 group"
+            onMouseMove={handleMouseMove}
+        >
             {/* Background elements for "tech/quant" feel */}
             <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none" />
             <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-blue-500/5 rounded-full blur-3xl translate-y-1/3 -translate-x-1/3 pointer-events-none" />
+
+            {/* Subtle Interactive Glow that follows mouse across the entire box */}
+            <motion.div
+                className="pointer-events-none absolute -inset-px rounded-2xl opacity-0 transition duration-500 group-hover:opacity-100 z-0"
+                style={{
+                    background: useTransform(
+                        [mouseX, mouseY],
+                        ([x, y]) => `radial-gradient(600px circle at ${x}px ${y}px, rgba(16, 185, 129, 0.06), transparent 40%)`
+                    ),
+                }}
+            />
 
             <div className="relative z-10 grid md:grid-cols-2 gap-12 items-center">
 
@@ -82,20 +96,8 @@ export default function Hero() {
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.8, delay: 0.3 }}
-                    className="relative flex items-center justify-center p-8 group"
-                    onMouseMove={handleMouseMove}
+                    className="relative flex items-center justify-center p-8"
                 >
-                    {/* Subtle Interactive Glow that follows mouse, but without hard borders */}
-                    <motion.div
-                        className="pointer-events-none absolute -inset-[100px] opacity-0 transition duration-500 group-hover:opacity-100"
-                        style={{
-                            background: useTransform(
-                                [mouseX, mouseY],
-                                ([x, y]) => `radial-gradient(400px circle at ${x}px ${y}px, rgba(16, 185, 129, 0.08), transparent 60%)`
-                            ),
-                        }}
-                    />
-
                     <div className="relative w-full flex items-center justify-center">
                         {/* Glowing ring behind logo */}
                         <div className="absolute inset-0 flex items-center justify-center">
