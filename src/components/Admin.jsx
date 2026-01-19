@@ -1,18 +1,17 @@
 import React, { useState } from 'react';
-import { LogOut, Save, RotateCcw, FileJson, LayoutDashboard, Edit3, Upload, AlertCircle, CheckCircle2, Download, Loader2 } from 'lucide-react';
+import { LogOut, Save, RotateCcw, FileJson, Edit3, Upload, AlertCircle, CheckCircle2, Download, Loader2 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import JSZip from 'jszip';
 import Papa from 'papaparse';
 
 const TABS = [
-    { id: 'general', label: 'General & NAV', icon: <LayoutDashboard size={16} /> },
-    { id: 'updates', label: 'Updates & Context', icon: <Edit3 size={16} /> },
     { id: 'upload', label: 'Upload Data (ZIP)', icon: <Upload size={16} /> },
+    { id: 'updates', label: 'Updates & Context', icon: <Edit3 size={16} /> },
     { id: 'raw', label: 'Advanced (JSON)', icon: <FileJson size={16} /> },
 ];
 
 export default function Admin({ data, setData, onLogout }) {
-    const [activeTab, setActiveTab] = useState('general');
+    const [activeTab, setActiveTab] = useState('upload');
     const [jsonError, setJsonError] = useState(null);
     const [tempJson, setTempJson] = useState(JSON.stringify(data, null, 2));
     const [uploadStatus, setUploadStatus] = useState(null);
@@ -231,30 +230,7 @@ export default function Admin({ data, setData, onLogout }) {
                     {/* Content Area */}
                     <div className="flex-1 space-y-6">
 
-                        {activeTab === 'general' && (
-                            <div className="space-y-8 animate-in fade-in duration-300">
-                                <section className="space-y-4">
-                                    <h3 className="text-lg font-medium border-b border-border pb-2">NAV & Performance</h3>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <InputField label="Current NAV" type="number" value={data.nav.current} onChange={(v) => updateField('nav.current', parseFloat(v))} />
-                                        <InputField label="Last Update (ISO Date)" type="text" value={data.lastUpdate} onChange={(v) => updateField('lastUpdate', v)} />
-                                        <InputField label="MTD (%)" type="number" value={data.nav.mtd} onChange={(v) => updateField('nav.mtd', parseFloat(v))} />
-                                        <InputField label="YTD (%)" type="number" value={data.nav.ytd} onChange={(v) => updateField('nav.ytd', parseFloat(v))} />
-                                        <InputField label="Inception (%)" type="number" value={data.nav.inception} onChange={(v) => updateField('nav.inception', parseFloat(v))} />
-                                    </div>
-                                </section>
 
-                                <section className="space-y-4">
-                                    <h3 className="text-lg font-medium border-b border-border pb-2">Risk Metrics</h3>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <InputField label="Volatility (%)" type="number" value={data.metrics.volatility} onChange={(v) => updateField('metrics.volatility', parseFloat(v))} />
-                                        <InputField label="Max Drawdown (%)" type="number" value={data.metrics.maxDrawdown} onChange={(v) => updateField('metrics.maxDrawdown', parseFloat(v))} />
-                                        <InputField label="Rolling Drawdown (%)" type="number" value={data.metrics.rollingDrawdown} onChange={(v) => updateField('metrics.rollingDrawdown', parseFloat(v))} />
-                                        <InputField label="Liquidity Score (%)" type="number" value={data.metrics.liquidity} onChange={(v) => updateField('metrics.liquidity', parseFloat(v))} />
-                                    </div>
-                                </section>
-                            </div>
-                        )}
 
                         {activeTab === 'updates' && (
                             <div className="space-y-8 animate-in fade-in duration-300">
