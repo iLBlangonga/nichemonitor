@@ -42,6 +42,12 @@ export default function Dashboard({ data, onLogout }) {
 
                         <div className="flex items-center gap-6">
                             <div className="hidden md:flex flex-col items-end text-xs text-muted-foreground/60">
+                                <span>ISIN</span>
+                                <span className="font-mono text-white/80">CH1456969760</span>
+                            </div>
+                            <div className="h-4 w-px bg-white/10 hidden md:block" />
+
+                            <div className="hidden md:flex flex-col items-end text-xs text-muted-foreground/60">
                                 <span>NAV Update</span>
                                 <span className="font-mono text-emerald-400">{formatDate(data.lastUpdate)}</span>
                             </div>
