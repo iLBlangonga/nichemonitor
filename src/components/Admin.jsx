@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LogOut, Save, RotateCcw, FileJson, Edit3, Upload, AlertCircle, CheckCircle2, Download, Loader2, Plus, Trash2, Calendar } from 'lucide-react';
+import { LogOut, Save, RotateCcw, FileJson, Edit3, Upload, AlertCircle, CheckCircle2, Download, Loader2, Plus, Trash2, Calendar, FileText } from 'lucide-react';
 import { cn } from '../lib/utils';
 import JSZip from 'jszip';
 import Papa from 'papaparse';
@@ -16,6 +16,7 @@ export default function Admin({ data, setData, onLogout }) {
     const [tempJson, setTempJson] = useState(JSON.stringify(data, null, 2));
     const [uploadStatus, setUploadStatus] = useState(null);
     const [isSaving, setIsSaving] = useState(false);
+    const [isPdfUploading, setIsPdfUploading] = useState(false);
     const [newEvent, setNewEvent] = useState({ date: new Date().toISOString().split('T')[0], event: '', category: 'Milestone' });
 
     // Handler for form field updates
@@ -192,6 +193,49 @@ export default function Admin({ data, setData, onLogout }) {
         setTempJson(JSON.stringify(newData, null, 2));
     };
 
+    const handlePdfUpload = async (file) => {
+        if (!file) return;
+        setIsPdfUploading(true);
+        setUploadStatus({ type: 'info', message: 'Uploading PDF...' });
+
+        // In Dev, we might simulate upload or fail if no API
+        const endpoint = '/api/upload-pdf?filename=newsletter.pdf';
+
+        try {
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                body: file,
+            });
+
+            if (response.ok) {
+                const blob = await response.json();
+                // Update data.documents
+                const newData = { ...data };
+                const docIndex = newData.documents.findIndex(d => d.name === 'Latest Newsletter');
+                if (docIndex >= 0) {
+                    newData.documents[docIndex].url = blob.url;
+                } else {
+                    // create if missing
+                    newData.documents.push({
+                        name: 'Latest Newsletter',
+                        type: 'pdf',
+                        url: blob.url
+                    });
+                }
+                setData(newData);
+                setTempJson(JSON.stringify(newData, null, 2));
+                setUploadStatus({ type: 'success', message: 'PDF Uploaded! Click "Save Changes" to persist the new link.' });
+            } else {
+                throw new Error('Upload failed');
+            }
+        } catch (err) {
+            console.error(err);
+            setUploadStatus({ type: 'error', message: `PDF Upload failed: ${err.message}` });
+        } finally {
+            setIsPdfUploading(false);
+        }
+    };
+
     return (
         <div className="min-h-screen bg-background text-foreground font-sans">
             <header className="border-b border-border bg-card">
@@ -259,6 +303,42 @@ export default function Admin({ data, setData, onLogout }) {
                                         <TextAreaField label="Market Context" value={data.updates.marketContext} onChange={(v) => updateField('updates.marketContext', v)} />
                                         <TextAreaField label="Portfolio Actions" value={data.updates.portfolioActions} onChange={(v) => updateField('updates.portfolioActions', v)} />
                                         <TextAreaField label="Focus Going Forward" value={data.updates.focus} onChange={(v) => updateField('updates.focus', v)} />
+                                    </div>
+                                </section>
+
+
+
+                                <section className="space-y-4 pt-8 border-t border-border">
+                                    <h3 className="text-lg font-medium border-b border-border pb-2">Document Management</h3>
+                                    <div className="bg-muted/50 rounded-lg p-6 flex flex-col items-center justify-center space-y-4 text-center">
+                                        <div className="p-3 bg-card rounded-full shadow-sm">
+                                            <FileText className="h-6 w-6 text-muted-foreground" />
+                                        </div>
+                                        <div>
+                                            <h4 className="font-medium">Latest Newsletter</h4>
+                                            <p className="text-xs text-muted-foreground">Upload a new PDF to replace the current newsletter.</p>
+                                        </div>
+
+                                        <label className="relative cursor-pointer bg-primary text-primary-foreground px-4 py-2 rounded-md font-medium text-sm hover:bg-primary/90 transition-colors">
+                                            <span>{isPdfUploading ? 'Uploading...' : 'Upload PDF'}</span>
+                                            <input
+                                                type="file"
+                                                className="hidden"
+                                                accept=".pdf"
+                                                disabled={isPdfUploading}
+                                                onChange={(e) => {
+                                                    if (e.target.files?.[0]) {
+                                                        handlePdfUpload(e.target.files[0]);
+                                                    }
+                                                }}
+                                            />
+                                        </label>
+                                        {/* Show current link if exists */}
+                                        {data.documents.find(d => d.name === 'Latest Newsletter')?.url && (
+                                            <div className="text-xs text-muted-foreground break-all">
+                                                Current link: <a href={data.documents.find(d => d.name === 'Latest Newsletter').url} target="_blank" rel="noopener noreferrer" className="text-accent underline">View PDF</a>
+                                            </div>
+                                        )}
                                     </div>
                                 </section>
 
@@ -391,8 +471,8 @@ export default function Admin({ data, setData, onLogout }) {
 
                     </div>
                 </div>
-            </main>
-        </div>
+            </main >
+        </div >
     );
 }
 
