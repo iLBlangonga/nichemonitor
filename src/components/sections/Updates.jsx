@@ -1,5 +1,7 @@
 import { Megaphone, Target, ArrowRight, Activity, Calendar } from 'lucide-react';
 import { cn } from '../../lib/utils';
+import { useLanguage } from '../../contexts/LanguageContext';
+import { translations } from '../../translations';
 
 function UpdateCard({ title, icon, content, date }) {
     return (
@@ -21,6 +23,8 @@ function UpdateCard({ title, icon, content, date }) {
 }
 
 export default function Updates({ data }) {
+    const { language } = useLanguage();
+    const t = translations[language];
     const { updates, timeline } = data;
 
     return (
@@ -31,23 +35,23 @@ export default function Updates({ data }) {
                     <div className="p-2 rounded-lg bg-blue-500/10 border border-blue-500/20">
                         <Megaphone size={16} className="text-blue-400" />
                     </div>
-                    <h2 className="text-xl font-light tracking-tight text-white">Investment <span className="text-muted-foreground font-normal text-sm ml-2">Updates</span></h2>
+                    <h2 className="text-xl font-light tracking-tight text-white">{t.updates.investUpdates} <span className="text-muted-foreground font-normal text-sm ml-2">{t.updates.investUpdatesSub}</span></h2>
                 </div>
 
                 <div className="bg-[#0a0a0a] border border-white/5 rounded-2xl p-8 shadow-xl">
                     <div className="space-y-2">
                         <UpdateCard
-                            title="Market Context"
+                            title={t.updates.marketContext}
                             icon={<Activity size={14} />}
                             content={updates.marketContext}
                         />
                         <UpdateCard
-                            title="Portfolio Actions"
+                            title={t.updates.portfolioActions}
                             icon={<Target size={14} />}
                             content={updates.portfolioActions}
                         />
                         <UpdateCard
-                            title="Focus Going Forward"
+                            title={t.updates.focus}
                             icon={<ArrowRight size={14} />}
                             content={updates.focus}
                         />
@@ -61,7 +65,7 @@ export default function Updates({ data }) {
                     <div className="p-2 rounded-lg bg-purple-500/10 border border-purple-500/20">
                         <Calendar size={16} className="text-purple-400" />
                     </div>
-                    <h2 className="text-xl font-light tracking-tight text-white">Timeline</h2>
+                    <h2 className="text-xl font-light tracking-tight text-white">{t.updates.timeline}</h2>
                 </div>
 
                 <div className="bg-[#0a0a0a] border border-white/5 rounded-2xl p-6 shadow-xl h-fit">
@@ -86,7 +90,7 @@ export default function Updates({ data }) {
                                         </div>
                                         <div className="pb-6 last:pb-0">
                                             <span className={cn("block text-[10px] font-mono mb-1", textColor)}>
-                                                {new Date(item.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                                                {new Date(item.date).toLocaleDateString(language === 'it' ? 'it-IT' : 'en-GB', { month: 'short', day: 'numeric', year: 'numeric' })}
                                             </span>
                                             <span className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors">{item.event}</span>
                                         </div>

@@ -1,6 +1,8 @@
 import React from 'react';
 import { ShieldCheck, Activity, BarChart, Clock, Lock } from 'lucide-react';
 import { cn } from '../../lib/utils';
+import { useLanguage } from '../../contexts/LanguageContext';
+import { translations } from '../../translations';
 
 function RiskMetric({ label, value, description, icon, highlight }) {
     return (
@@ -26,6 +28,8 @@ function RiskMetric({ label, value, description, icon, highlight }) {
 }
 
 export default function Risk({ data }) {
+    const { language } = useLanguage();
+    const t = translations[language];
     const { metrics, riskGovernance } = data;
 
     return (
@@ -34,32 +38,32 @@ export default function Risk({ data }) {
                 <div className="p-2 rounded-lg bg-orange-500/10 border border-orange-500/20">
                     <ShieldCheck size={16} className="text-orange-400" />
                 </div>
-                <h2 className="text-xl font-light tracking-tight text-white">Risk <span className="text-muted-foreground font-normal text-sm ml-2">& Control</span></h2>
+                <h2 className="text-xl font-light tracking-tight text-white">{t.risk.title} <span className="text-muted-foreground font-normal text-sm ml-2">{t.risk.subtitle}</span></h2>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <RiskMetric
-                    label="Ann. Volatility"
+                    label={t.risk.vol}
                     value={`${metrics.volatility}%`}
                     icon={<Activity size={18} />}
                     highlight // Vol is key, highlight it
                 />
                 <RiskMetric
-                    label="Max Drawdown"
+                    label={t.risk.maxDd}
                     value={`${metrics.maxDrawdown}%`}
-                    description="Since Inception"
+                    description={t.risk.maxDdSub}
                     icon={<BarChart size={18} className="rotate-180" />}
                 />
                 <RiskMetric
-                    label="Rolling 12M LL"
+                    label={t.risk.rollingLl}
                     value={`${metrics.rollingDrawdown}%`}
-                    description="Max loss 12m"
+                    description={t.risk.rollingLlSub}
                     icon={<BarChart size={18} className="rotate-180" />}
                 />
                 <RiskMetric
-                    label="Liquidity Score"
+                    label={t.risk.liqScore}
                     value={`${metrics.liquidity}%`}
-                    description="% liquid via T+2"
+                    description={t.risk.liqScoreSub}
                     icon={<Clock size={18} />}
                 />
             </div>
@@ -69,18 +73,18 @@ export default function Risk({ data }) {
 
                 <div className="flex items-center gap-2 mb-6">
                     <Lock size={14} className="text-orange-400" />
-                    <h3 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Governance Structure</h3>
+                    <h3 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">{t.risk.governance}</h3>
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-8 relative z-10">
                     <div className="space-y-2">
-                        <span className="block text-xs font-medium text-orange-400 uppercase tracking-wider">Monitoring</span>
+                        <span className="block text-xs font-medium text-orange-400 uppercase tracking-wider">{t.risk.monitoring}</span>
                         <p className="text-sm text-gray-400 leading-relaxed border-l-2 border-orange-500/20 pl-4">
                             {riskGovernance.monitoring}
                         </p>
                     </div>
                     <div className="space-y-2">
-                        <span className="block text-xs font-medium text-orange-400 uppercase tracking-wider">Controls</span>
+                        <span className="block text-xs font-medium text-orange-400 uppercase tracking-wider">{t.risk.controls}</span>
                         <p className="text-sm text-gray-400 leading-relaxed border-l-2 border-orange-500/20 pl-4">
                             {riskGovernance.limits}
                         </p>

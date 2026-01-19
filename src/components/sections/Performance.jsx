@@ -2,10 +2,14 @@ import React, { useState } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { TrendingUp } from 'lucide-react';
 import { cn } from '../../lib/utils';
+import { useLanguage } from '../../contexts/LanguageContext';
+import { translations } from '../../translations';
 
 const TIME_RANGES = ['1M', '3M', '6M', 'YTD', '1Y', 'ALL'];
 
 export default function Performance({ data }) {
+    const { language } = useLanguage();
+    const t = translations[language];
     const [activeRange, setActiveRange] = useState('ALL');
 
     // Filter data based on activeRange using real dates
@@ -58,7 +62,7 @@ export default function Performance({ data }) {
                     <div className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
                         <TrendingUp size={16} className="text-emerald-400" />
                     </div>
-                    <h2 className="text-xl font-light tracking-tight text-white">Performance <span className="text-muted-foreground font-normal text-sm ml-2">NAV History</span></h2>
+                    <h2 className="text-xl font-light tracking-tight text-white">{t.performance.title} <span className="text-muted-foreground font-normal text-sm ml-2">{t.performance.subtitle}</span></h2>
                 </div>
 
                 <div className="flex items-center p-1 bg-white/5 border border-white/10 rounded-lg">
@@ -73,7 +77,7 @@ export default function Performance({ data }) {
                                     : "text-muted-foreground hover:text-white hover:bg-white/5 border border-transparent"
                             )}
                         >
-                            {range}
+                            {t.timeRanges[range]}
                         </button>
                     ))}
                 </div>
@@ -125,7 +129,7 @@ export default function Performance({ data }) {
                             labelStyle={{ color: '#a3a3a3', marginBottom: '4px', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.05em' }}
                             itemStyle={{ color: '#fff', fontWeight: 600 }}
                             formatter={(value) => [`${value.toFixed(2)}`, 'NAV']}
-                            labelFormatter={(label) => new Date(label).toLocaleDateString('default', { month: 'long', day: 'numeric', year: 'numeric' })}
+                            labelFormatter={(label) => new Date(label).toLocaleDateString(language === 'it' ? 'it-IT' : 'en-GB', { month: 'long', day: 'numeric', year: 'numeric' })}
                             cursor={{ stroke: 'rgba(255,255,255,0.1)', strokeWidth: 1, strokeDasharray: '4 4' }}
                         />
                         <Area
@@ -142,7 +146,7 @@ export default function Performance({ data }) {
             </div>
 
             <div className="text-[10px] text-muted-foreground/50 text-right font-mono uppercase tracking-widest">
-                * Data source: Equilibrium Quantitative Models
+                {t.performance.source}
             </div>
         </section>
     );

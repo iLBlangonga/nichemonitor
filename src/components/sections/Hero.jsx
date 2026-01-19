@@ -1,8 +1,12 @@
 import React from 'react';
 import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
 import { ArrowRight, BarChart2, Shield, Activity } from 'lucide-react';
+import { useLanguage } from '../../contexts/LanguageContext';
+import { translations } from '../../translations';
 
 export default function Hero() {
+    const { language } = useLanguage();
+    const t = translations[language];
     const x = useMotionValue(0);
     const y = useMotionValue(0);
 
@@ -47,23 +51,23 @@ export default function Hero() {
                     >
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-medium tracking-wider uppercase mb-6">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                            Active Management Certificate
+                            {t.hero.cert}
                         </div>
 
                         <h1 className="text-4xl md:text-5xl font-light tracking-tight text-white mb-4 flex flex-col gap-1">
-                            <span>Strategic Stability</span>
-                            <span className="text-xl md:text-2xl text-white/40 font-serif italic self-center">in a</span>
-                            <span className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400 pb-2">Shifting World</span>
+                            <span>{t.hero.title1}</span>
+                            <span className="text-xl md:text-2xl text-white/40 font-serif italic self-center">{t.hero.title2}</span>
+                            <span className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400 pb-2">{t.hero.title3}</span>
                         </h1>
 
                         <p className="text-lg text-gray-400 leading-relaxed max-w-lg">
-                            NICHE is a specialized Absolute Return strategy designed to capture systematic risk premia while maintaining sophisticated downside protection. We leverage quantitative models to navigate global market complexities.
+                            {t.hero.description}
                         </p>
 
                         <div className="space-y-1 text-xs text-muted-foreground border-l-2 border-white/10 pl-4 py-1 mt-8">
-                            <p><span className="text-gray-400 font-medium">Issuer:</span> CapStone Securities PCC Limited.</p>
-                            <p><span className="text-gray-400 font-medium">Investment Manager:</span> Frame Asset Management SA (FINMA regulated).</p>
-                            <p><span className="text-gray-400 font-medium">Advisory Company:</span> Equilibrium Sagl</p>
+                            <p><span className="text-gray-400 font-medium">{t.hero.issuer}</span> CapStone Securities PCC Limited.</p>
+                            <p><span className="text-gray-400 font-medium">{t.hero.manager}</span> Frame Asset Management SA (FINMA regulated).</p>
+                            <p><span className="text-gray-400 font-medium">{t.hero.advisor}</span> Equilibrium Sagl</p>
                         </div>
                     </motion.div>
 
@@ -75,18 +79,18 @@ export default function Hero() {
                     >
                         <div className="flex flex-col gap-2 p-4 rounded-xl bg-white/5 border border-white/5 backdrop-blur-sm hover:bg-white/10 transition-colors">
                             <Activity className="text-emerald-400 mb-1" size={20} />
-                            <span className="text-sm font-medium text-gray-300">Absolute Return</span>
-                            <span className="text-xs text-gray-500">Uncorrelated Alpha</span>
+                            <span className="text-sm font-medium text-gray-300">{t.hero.card1title}</span>
+                            <span className="text-xs text-gray-500">{t.hero.card1sub}</span>
                         </div>
                         <div className="flex flex-col gap-2 p-4 rounded-xl bg-white/5 border border-white/5 backdrop-blur-sm hover:bg-white/10 transition-colors">
                             <Shield className="text-cyan-400 mb-1" size={20} />
-                            <span className="text-sm font-medium text-gray-300">Risk in Focus</span>
-                            <span className="text-xs text-gray-500">Active Hedging</span>
+                            <span className="text-sm font-medium text-gray-300">{t.hero.card2title}</span>
+                            <span className="text-xs text-gray-500">{t.hero.card2sub}</span>
                         </div>
                         <div className="flex flex-col gap-2 p-4 rounded-xl bg-white/5 border border-white/5 backdrop-blur-sm hover:bg-white/10 transition-colors">
                             <BarChart2 className="text-purple-400 mb-1" size={20} />
-                            <span className="text-sm font-medium text-gray-300">Systematic</span>
-                            <span className="text-xs text-gray-500">Quant Governance</span>
+                            <span className="text-sm font-medium text-gray-300">{t.hero.card3title}</span>
+                            <span className="text-xs text-gray-500">{t.hero.card3sub}</span>
                         </div>
                     </motion.div>
                 </div>

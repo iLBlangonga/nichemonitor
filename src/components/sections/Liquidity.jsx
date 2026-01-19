@@ -2,10 +2,14 @@ import React, { useState } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { TrendingUp } from 'lucide-react';
 import { cn } from '../../lib/utils';
+import { useLanguage } from '../../contexts/LanguageContext';
+import { translations } from '../../translations';
 
 const TIME_RANGES = ['1M', '3M', '6M', 'YTD', '1Y', 'ALL'];
 
 export default function Liquidity({ data }) {
+    const { language } = useLanguage();
+    const t = translations[language];
     const [activeRange, setActiveRange] = useState('ALL');
 
     // Filter data based on activeRange using real dates
@@ -57,7 +61,7 @@ export default function Liquidity({ data }) {
                     <div className="p-2 rounded-lg bg-blue-500/10 border border-blue-500/20">
                         <TrendingUp size={16} className="text-blue-400" />
                     </div>
-                    <h2 className="text-xl font-light tracking-tight text-white">Liquidity <span className="text-muted-foreground font-normal text-sm ml-2">Exposure %</span></h2>
+                    <h2 className="text-xl font-light tracking-tight text-white">{t.liquidity.title} <span className="text-muted-foreground font-normal text-sm ml-2">{t.liquidity.subtitle}</span></h2>
                 </div>
 
                 <div className="flex items-center p-1 bg-white/5 border border-white/10 rounded-lg">
@@ -72,7 +76,7 @@ export default function Liquidity({ data }) {
                                     : "text-muted-foreground hover:text-white hover:bg-white/5 border border-transparent"
                             )}
                         >
-                            {range}
+                            {t.timeRanges[range]}
                         </button>
                     ))}
                 </div>
@@ -123,8 +127,8 @@ export default function Liquidity({ data }) {
                             }}
                             labelStyle={{ color: '#a3a3a3', marginBottom: '4px', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.05em' }}
                             itemStyle={{ color: '#fff', fontWeight: 600 }}
-                            formatter={(value) => [`${value.toFixed(2)}%`, 'Liquidity']}
-                            labelFormatter={(label) => new Date(label).toLocaleDateString('default', { month: 'long', day: 'numeric', year: 'numeric' })}
+                            formatter={(value) => [`${value.toFixed(2)}%`, t.liquidity.title]}
+                            labelFormatter={(label) => new Date(label).toLocaleDateString(language === 'it' ? 'it-IT' : 'en-GB', { month: 'long', day: 'numeric', year: 'numeric' })}
                             cursor={{ stroke: 'rgba(255,255,255,0.1)', strokeWidth: 1, strokeDasharray: '4 4' }}
                         />
                         <Area

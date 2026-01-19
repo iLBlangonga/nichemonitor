@@ -1,5 +1,7 @@
 import React from 'react';
-import { LogOut, FileText, ArrowDownToLine, TrendingUp, TrendingDown, AlertCircle } from 'lucide-react';
+import { LogOut, FileText, ArrowDownToLine, TrendingUp, TrendingDown, AlertCircle, Globe } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
+import { translations } from '../translations';
 import { cn } from '../lib/utils';
 // Future imports for other sections
 // import PerformanceSection from './sections/PerformanceSection';
@@ -12,8 +14,11 @@ import Documents from './sections/Documents';
 import Hero from './sections/Hero';
 
 export default function Dashboard({ data, onLogout }) {
+    const { language, toggleLanguage } = useLanguage();
+    const t = translations[language];
+
     const formatDate = (dateString) => {
-        return new Date(dateString).toLocaleDateString('en-GB', {
+        return new Date(dateString).toLocaleDateString(language === 'it' ? 'it-IT' : 'en-GB', {
             day: 'numeric',
             month: 'long',
             year: 'numeric'
@@ -42,22 +47,31 @@ export default function Dashboard({ data, onLogout }) {
 
                         <div className="flex items-center gap-6">
                             <div className="hidden md:flex flex-col items-end text-xs text-muted-foreground/60">
-                                <span>ISIN</span>
+                                <span>{t.nav.isin}</span>
                                 <span className="font-mono text-white/80">CH1456969760</span>
                             </div>
                             <div className="h-4 w-px bg-white/10 hidden md:block" />
 
                             <div className="hidden md:flex flex-col items-end text-xs text-muted-foreground/60">
-                                <span>NAV Update</span>
+                                <span>{t.nav.navUpdate}</span>
                                 <span className="font-mono text-emerald-400">{formatDate(data.lastUpdate)}</span>
                             </div>
                             <div className="h-4 w-px bg-white/10 hidden md:block" />
+
+                            <button
+                                onClick={toggleLanguage}
+                                className="text-xs font-medium text-muted-foreground hover:text-white transition-colors flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-white/5"
+                            >
+                                <Globe size={14} />
+                                <span className="hidden sm:inline">{language === 'en' ? 'EN' : 'IT'}</span>
+                            </button>
+
                             <button
                                 onClick={onLogout}
                                 className="text-xs font-medium text-muted-foreground hover:text-white transition-colors flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-white/5"
                             >
                                 <LogOut size={14} />
-                                <span className="hidden sm:inline">Portal Logout</span>
+                                <span className="hidden sm:inline">{t.nav.logout}</span>
                             </button>
                         </div>
                     </div>
@@ -73,31 +87,37 @@ export default function Dashboard({ data, onLogout }) {
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <MetricCard
-                            label="Current NAV"
+                            label={t.dashboard.currentNav}
                             value={data.nav.current.toFixed(2)}
                             subValue="EUR"
                             highlight
                         />
                         <MetricCard
-                            label="MTD Performance"
+                            label={t.dashboard.mtdPerf}
                             value={`${data.nav.mtd > 0 ? '+' : ''}${data.nav.mtd}%`}
                             trend={data.nav.mtd >= 0 ? 'up' : 'down'}
+                            posText={t.dashboard.pos}
+                            negText={t.dashboard.neg}
                         />
                         <MetricCard
-                            label="YTD Performance"
+                            label={t.dashboard.ytdPerf}
                             value={`${data.nav.ytd > 0 ? '+' : ''}${data.nav.ytd}%`}
                             trend={data.nav.ytd >= 0 ? 'up' : 'down'}
+                            posText={t.dashboard.pos}
+                            negText={t.dashboard.neg}
                         />
                         <MetricCard
-                            label="Since Inception"
+                            label={t.dashboard.inceptionPerf}
                             value={`${data.nav.inception > 0 ? '+' : ''}${data.nav.inception}%`}
                             trend={data.nav.inception >= 0 ? 'up' : 'down'}
+                            posText={t.dashboard.pos}
+                            negText={t.dashboard.neg}
                         />
                     </div>
 
 
                     <div className="text-xs text-muted-foreground">
-                        * All performance figures shown net of fees.
+                        {t.dashboard.feesNote}
                     </div>
                 </section>
 
@@ -137,7 +157,7 @@ export default function Dashboard({ data, onLogout }) {
     );
 }
 
-function MetricCard({ label, value, subValue, trend, highlight, secondary, icon }) {
+function MetricCard({ label, value, subValue, trend, highlight, secondary, icon, ...props }) {
     return (
         <div className={cn(
             "relative p-5 rounded-xl border transition-all duration-300 group overflow-hidden",
@@ -159,7 +179,7 @@ function MetricCard({ label, value, subValue, trend, highlight, secondary, icon 
                         trend === 'up' ? "bg-emerald-500/10 text-emerald-400" : "bg-rose-500/10 text-rose-400"
                     )}>
                         {trend === 'up' ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
-                        <span>{trend === 'up' ? 'Pos' : 'Neg'}</span>
+                        <span>{trend === 'up' ? (props.posText || 'Pos') : (props.negText || 'Neg')}</span>
                     </div>
                 )}
             </div>

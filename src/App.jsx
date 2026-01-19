@@ -37,11 +37,15 @@ class ErrorBoundary extends React.Component {
     }
 }
 
+import { LanguageProvider } from './contexts/LanguageContext';
+
 export default function AppWrapper() {
     return (
-        <ErrorBoundary>
-            <App />
-        </ErrorBoundary>
+        <LanguageProvider>
+            <ErrorBoundary>
+                <App />
+            </ErrorBoundary>
+        </LanguageProvider>
     );
 }
 
