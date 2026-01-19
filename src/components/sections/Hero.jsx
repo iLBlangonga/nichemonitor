@@ -37,12 +37,18 @@ export default function Hero() {
                         </div>
 
                         <h1 className="text-4xl md:text-5xl font-light tracking-tight text-white mb-4">
-                            Precision in <span className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">Volatility</span>
+                            Strategic Stability in a <span className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">Shifting World</span>
                         </h1>
 
                         <p className="text-lg text-gray-400 leading-relaxed max-w-lg">
                             NICHE is a specialized Absolute Return strategy designed to capture systematic risk premia while maintaining sophisticated downside protection. We leverage quantitative models to navigate global market complexities.
                         </p>
+
+                        <div className="space-y-1 text-xs text-muted-foreground border-l-2 border-white/10 pl-4 py-1">
+                            <p><span className="text-gray-400 font-medium">Issuer:</span> CapStone Securities PCC Limited.</p>
+                            <p><span className="text-gray-400 font-medium">Investment Manager:</span> Frame Asset Management SA (FINMA regulated).</p>
+                            <p><span className="text-gray-400 font-medium">Advisory Company:</span> Equilibrium Sagl</p>
+                        </div>
                     </motion.div>
 
                     <motion.div
@@ -58,8 +64,8 @@ export default function Hero() {
                         </div>
                         <div className="flex flex-col gap-2 p-4 rounded-xl bg-white/5 border border-white/5 backdrop-blur-sm hover:bg-white/10 transition-colors">
                             <Shield className="text-cyan-400 mb-1" size={20} />
-                            <span className="text-sm font-medium text-gray-300">Long Volatility</span>
-                            <span className="text-xs text-gray-500">Tail Risk Hedge</span>
+                            <span className="text-sm font-medium text-gray-300">Risk in Focus</span>
+                            <span className="text-xs text-gray-500">Active Hedging</span>
                         </div>
                         <div className="flex flex-col gap-2 p-4 rounded-xl bg-white/5 border border-white/5 backdrop-blur-sm hover:bg-white/10 transition-colors">
                             <BarChart2 className="text-purple-400 mb-1" size={20} />
