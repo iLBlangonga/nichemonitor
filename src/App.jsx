@@ -77,6 +77,20 @@ function App() {
                         nicheDoc.url = '/niche_presentation.pdf';
                     }
 
+                    // Migration: Check if updates are in old format (flat) and migrate to bilingual
+                    if (latestData.updates && !latestData.updates.en && !latestData.updates.it) {
+                        console.log('Migrating legacy updates data structure to bilingual...');
+                        latestData.updates = {
+                            en: { ...latestData.updates },
+                            // Use local Italian defaults if available, else copy English or empty
+                            it: appData.updates?.it || {
+                                marketContext: "",
+                                portfolioActions: "",
+                                focus: ""
+                            }
+                        };
+                    }
+
                     setData(latestData);
                     console.log('Hydrated with latest data from Vercel Blob');
                 }
