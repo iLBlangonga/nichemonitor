@@ -65,21 +65,34 @@ export default function Updates({ data }) {
                 </div>
 
                 <div className="bg-[#0a0a0a] border border-white/5 rounded-2xl p-6 shadow-xl h-fit">
-                    <div className="space-y-6">
-                        {timeline.map((item, index) => (
-                            <div key={index} className="relative flex gap-4 group">
-                                <div className="flex-none flex flex-col items-center">
-                                    <div className="w-2 h-2 rounded-full bg-purple-500 ring-4 ring-purple-500/10 mt-1.5" />
-                                    {index !== timeline.length - 1 && <div className="w-px h-full bg-white/5 my-1" />}
-                                </div>
-                                <div className="pb-6 last:pb-0">
-                                    <span className="block text-[10px] font-mono text-purple-400 mb-1">
-                                        {new Date(item.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
-                                    </span>
-                                    <span className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors">{item.event}</span>
-                                </div>
-                            </div>
-                        ))}
+                    <div className="space-y-6 max-h-[400px] overflow-y-auto pr-2 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-white/10">
+                        {[...timeline]
+                            .sort((a, b) => new Date(b.date) - new Date(a.date))
+                            .map((item, index, arr) => {
+                                const COLORS = {
+                                    'Milestone': 'text-purple-400 bg-purple-500 ring-purple-500/10',
+                                    'Report': 'text-blue-400 bg-blue-500 ring-blue-500/10',
+                                    'Alert': 'text-orange-400 bg-orange-500 ring-orange-500/10',
+                                    'default': 'text-gray-400 bg-gray-500 ring-gray-500/10'
+                                };
+                                const colorClass = COLORS[item.category] || COLORS['default'];
+                                const [textColor, bgColor, ringColor] = colorClass.split(' ');
+
+                                return (
+                                    <div key={index} className="relative flex gap-4 group">
+                                        <div className="flex-none flex flex-col items-center">
+                                            <div className={cn("w-2 h-2 rounded-full ring-4 mt-1.5", bgColor, ringColor)} />
+                                            {index !== arr.length - 1 && <div className="w-px h-full bg-white/5 my-1" />}
+                                        </div>
+                                        <div className="pb-6 last:pb-0">
+                                            <span className={cn("block text-[10px] font-mono mb-1", textColor)}>
+                                                {new Date(item.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                                            </span>
+                                            <span className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors">{item.event}</span>
+                                        </div>
+                                    </div>
+                                );
+                            })}
                     </div>
                 </div>
             </div>

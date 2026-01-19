@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LogOut, Save, RotateCcw, FileJson, Edit3, Upload, AlertCircle, CheckCircle2, Download, Loader2 } from 'lucide-react';
+import { LogOut, Save, RotateCcw, FileJson, Edit3, Upload, AlertCircle, CheckCircle2, Download, Loader2, Plus, Trash2, Calendar } from 'lucide-react';
 import { cn } from '../lib/utils';
 import JSZip from 'jszip';
 import Papa from 'papaparse';
@@ -16,6 +16,7 @@ export default function Admin({ data, setData, onLogout }) {
     const [tempJson, setTempJson] = useState(JSON.stringify(data, null, 2));
     const [uploadStatus, setUploadStatus] = useState(null);
     const [isSaving, setIsSaving] = useState(false);
+    const [newEvent, setNewEvent] = useState({ date: new Date().toISOString().split('T')[0], event: '', category: 'Milestone' });
 
     // Handler for form field updates
     const updateField = (path, value) => {
@@ -173,6 +174,24 @@ export default function Admin({ data, setData, onLogout }) {
         }
     };
 
+    const addTimelineEvent = () => {
+        if (!newEvent.event) return;
+        const currentTimeline = data.timeline || [];
+        const updatedTimeline = [...currentTimeline, newEvent];
+        const newData = { ...data, timeline: updatedTimeline };
+        setData(newData);
+        setTempJson(JSON.stringify(newData, null, 2));
+        setNewEvent({ date: new Date().toISOString().split('T')[0], event: '', category: 'Milestone' });
+    };
+
+    const removeTimelineEvent = (index) => {
+        const currentTimeline = data.timeline || [];
+        const updatedTimeline = currentTimeline.filter((_, i) => i !== index);
+        const newData = { ...data, timeline: updatedTimeline };
+        setData(newData);
+        setTempJson(JSON.stringify(newData, null, 2));
+    };
+
     return (
         <div className="min-h-screen bg-background text-foreground font-sans">
             <header className="border-b border-border bg-card">
@@ -240,6 +259,59 @@ export default function Admin({ data, setData, onLogout }) {
                                         <TextAreaField label="Market Context" value={data.updates.marketContext} onChange={(v) => updateField('updates.marketContext', v)} />
                                         <TextAreaField label="Portfolio Actions" value={data.updates.portfolioActions} onChange={(v) => updateField('updates.portfolioActions', v)} />
                                         <TextAreaField label="Focus Going Forward" value={data.updates.focus} onChange={(v) => updateField('updates.focus', v)} />
+                                    </div>
+                                </section>
+
+                                <section className="space-y-4 pt-8 border-t border-border">
+                                    <h3 className="text-lg font-medium border-b border-border pb-2">Timeline Management</h3>
+
+                                    <div className="bg-muted/50 rounded-lg p-4 space-y-4">
+                                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                                            <InputField label="Date" type="date" value={newEvent.date} onChange={(v) => setNewEvent({ ...newEvent, date: v })} />
+                                            <div className="md:col-span-2">
+                                                <InputField label="Event Description" value={newEvent.event} onChange={(v) => setNewEvent({ ...newEvent, event: v })} />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <label className="text-xs font-medium text-muted-foreground uppercase">Category</label>
+                                                <select
+                                                    className="w-full bg-card border border-border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-accent transition-all appearance-none"
+                                                    value={newEvent.category}
+                                                    onChange={(e) => setNewEvent({ ...newEvent, category: e.target.value })}
+                                                >
+                                                    <option value="Milestone">Milestone (Purple)</option>
+                                                    <option value="Report">Report (Blue)</option>
+                                                    <option value="Alert">Alert (Orange)</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <button
+                                            onClick={addTimelineEvent}
+                                            className="w-full flex items-center justify-center gap-2 bg-secondary text-secondary-foreground hover:bg-secondary/80 px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                                        >
+                                            <Plus size={16} /> Add Event
+                                        </button>
+                                    </div>
+
+                                    <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                                        {(data.timeline || []).sort((a, b) => new Date(b.date) - new Date(a.date)).map((item, index) => (
+                                            <div key={index} className="flex items-center gap-4 p-3 rounded-md bg-card border border-border group hover:border-accent transition-colors">
+                                                <div className={cn(
+                                                    "w-2 h-2 rounded-full flex-none",
+                                                    item.category === 'Report' ? 'bg-blue-500' :
+                                                        item.category === 'Alert' ? 'bg-orange-500' : 'bg-purple-500'
+                                                )} />
+                                                <span className="text-xs font-mono text-muted-foreground w-24 flex-none">{item.date}</span>
+                                                <span className="text-sm font-medium flex-1">{item.event}</span>
+                                                <span className="text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded uppercase tracking-wider">{item.category || 'Milestone'}</span>
+                                                <button
+                                                    onClick={() => removeTimelineEvent(index)}
+                                                    className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-md transition-colors opacity-0 group-hover:opacity-100"
+                                                    title="Remove event"
+                                                >
+                                                    <Trash2 size={14} />
+                                                </button>
+                                            </div>
+                                        ))}
                                     </div>
                                 </section>
                             </div>
