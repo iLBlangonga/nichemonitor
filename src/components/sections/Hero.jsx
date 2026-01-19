@@ -36,7 +36,7 @@ export default function Hero() {
                             Active Management Certificate
                         </div>
 
-                        <h1 className="text-4xl md:text-5xl font-light tracking-tight text-white mb-4 flex flex-col gap-1">
+                        <h1 className="text-4xl md:text-5xl font-light tracking-tight text-white mb-4 flex flex-col gap-1 pb-2">
                             <span>Strategic Stability</span>
                             <span className="text-xl md:text-2xl text-white/40 font-serif italic self-center">in a</span>
                             <span className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">Shifting World</span>
